@@ -1,0 +1,9 @@
+name = "backend"
+main = "src/index.ts"
+compatibility_date = "2024-10-11"
+compatibility_flags = [ "nodejs_compat" ]
+
+# here we  need to put the connection pool URL as the backend application will pick env values from here only 
+[vars]
+DATABASE_URL = ""
+
