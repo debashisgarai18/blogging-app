@@ -6,4 +6,5 @@ compatibility_flags = [ "nodejs_compat" ]
 # here we  need to put the connection pool URL as the backend application will pick env values from here only 
 [vars]
 DATABASE_URL = "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMWVlYjZjOTctMDQ4ZC00NjNlLThhMzgtODYzZGYzMjA5NjhkIiwidGVuYW50X2lkIjoiMjBjM2M0YjBlZDNlY2MwMGQ4ZTBjNDQ3OTRhNmJhMTQyYjlkY2E1NGY4OWI0OWQ3ZjEyMTAzN2JlYjNjOTc2ZCIsImludGVybmFsX3NlY3JldCI6Ijg1NzM0NWZhLWQ4OGMtNGIyNy05MmE0LWQ3ZjYzZTcxMDgxYiJ9.VeF2e1BJFrk-09tUfpRb5A3NoQAkgWSM7QFJL9LR-uk"
+JWT_SECRET = "debaBlog_018"
 
