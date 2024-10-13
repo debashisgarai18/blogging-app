@@ -13,6 +13,8 @@ const app = new Hono<{
 
 // TODO : Password encryption by the use of web crypto in cloudfare (for both signin and signup)
 // TODO : Initiate the input validation middleware here (for both signin and signup)
+// TODO : Do the zod validation here
+// TODO : ==> Later : Add bcrypt like package for the passwod encryption
 // the signup endpoint
 app.post("/signup", async (c) => {
   // get the prisma client
