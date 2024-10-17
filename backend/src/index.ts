@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
+import { signinInpuValidationMiddleware, signupInpuValidationMiddleware } from "./Middlewares/inputValMW";
 
 // intializing Hono
 const app = new Hono<{
@@ -16,7 +17,7 @@ const app = new Hono<{
 // TODO : Do the zod validation here
 // TODO : ==> Later : Add bcrypt like package for the passwod encryption
 // the signup endpoint
-app.post("/signup", async (c) => {
+app.post("/signup", signupInpuValidationMiddleware, async (c) => {
   // get the prisma client
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
@@ -52,7 +53,7 @@ app.post("/signup", async (c) => {
 });
 
 // the signin endpoint
-app.post("/signin", async (c) => {
+app.post("/signin", signinInpuValidationMiddleware, async (c) => {
   
   // get the prisma client
   const prisma = new PrismaClient({
