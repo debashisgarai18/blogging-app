@@ -1,8 +1,11 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { sign } from "hono/jwt";
-import { signinInpuValidationMiddleware, signupInpuValidationMiddleware } from "./Middlewares/inputValMW";
+import { sign, verify } from "hono/jwt";
+import {
+  signinInpuValidationMiddleware,
+  signupInpuValidationMiddleware,
+} from "./Middlewares/inputValMW";
 
 // intializing Hono
 const app = new Hono<{
@@ -12,9 +15,27 @@ const app = new Hono<{
   };
 }>().basePath("/api/v1");
 
+// Auth Check Middleware with the routes having endpoint ending with blog
+app.use("/blog/*", async (c, next) => {
+  const header: string | undefined = c.req.header("Authorization");
+  console.log("inside middleware")
+  // checking whether the header is empty or not
+  if (!header) {
+    c.status(404);
+    return c.text("The header is not provided");
+  }
+
+  const response = await verify(header, c.env.JWT_SECRET);
+  if (response.id) await next();
+  else {
+    c.status(404);
+    return c.json({
+      message: "Error : Unauthorized",
+    });
+  }
+});
+
 // TODO : Password encryption by the use of web crypto in cloudfare (for both signin and signup)
-// TODO : Initiate the input validation middleware here (for both signin and signup)
-// TODO : Do the zod validation here
 // TODO : ==> Later : Add bcrypt like package for the passwod encryption
 // the signup endpoint
 app.post("/signup", signupInpuValidationMiddleware, async (c) => {
@@ -54,12 +75,11 @@ app.post("/signup", signupInpuValidationMiddleware, async (c) => {
 
 // the signin endpoint
 app.post("/signin", signinInpuValidationMiddleware, async (c) => {
-  
   // get the prisma client
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
-  
+
   const { username, pwd } = await c.req.json();
   const findUser = await prisma.user.findUnique({
     where: {
@@ -84,5 +104,31 @@ app.post("/signin", signinInpuValidationMiddleware, async (c) => {
     }
   }
 });
+
+app.post("/blog/postBlog", (c) => {
+  c.status(200)
+  return c.json({
+    message: "To post the posts",
+  });
+});
+
+app.put("/blog/:blogId", (c) => {
+  return c.json({
+    message: "To upadte the specific blog",
+  });
+});
+
+app.get("/blog/bulk", (c) => {
+  return c.json({
+    message: "To get all the blog posts",
+  });
+});
+
+app.get("/blog/:blogId", (c) => {
+  return c.json({
+    message: "To get the blog of specific Id",
+  });
+});
+
 
 export default app;
