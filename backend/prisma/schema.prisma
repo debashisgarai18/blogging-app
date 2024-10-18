@@ -16,7 +16,7 @@ datasource db {
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
-  name      String?   //optional string
+  name      String?   // can be null
   password  String
   posts     Post[]
 }
@@ -25,6 +25,7 @@ model Post {
   id          String    @id @default(uuid())
   title       String
   content     String
+  thumbnail   String?
   published   Boolean   @default(false)
   author      User      @relation(fields: [authorId], references: [id])
   authorId    String
