@@ -1,3 +1,4 @@
+import { Context, Next } from "hono";
 import { z } from "zod";
 
 // Schema defination
@@ -14,7 +15,7 @@ const SignupInputSchema = z.object({
 // zod type inference
 type updatedTypes = z.infer<typeof SigninInputSchema>;
 
-export const signinInpuValidationMiddleware = async (c: any, next: any) => {
+export const signinInpuValidationMiddleware = async (c: Context, next : Next) => {
   const statusCheck = SigninInputSchema.safeParse(await c.req.json());
 
   if (statusCheck.success) {
