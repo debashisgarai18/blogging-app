@@ -11,9 +11,13 @@ const AuthMiddleware = async (c: Context, next: Next) => {
   }
 
   const response = await verify(header, c.env.JWT_SECRET);
-  if (response.id) await next();
-  else {
-    c.status(404);
+
+  if (response) {
+    // passing the user id to the blogRoute so that it can be used by the blogs
+    c.set("userId", response.id);
+    await next();
+  } else {
+    c.status(403);
     return c.json({
       message: "Error : Unauthorized",
     });

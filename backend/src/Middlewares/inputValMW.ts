@@ -3,13 +3,21 @@ import { z } from "zod";
 
 // Schema defination
 const SigninInputSchema = z.object({
-  username: z.string().email({ message: "This should be of email format!!" }),
-  pwd: z.string().min(6, { message: "Should contain minimum 6 digits!!" }),
+  username: z
+    .string()
+    .email({
+      message: "This should be of email format / username cannot be empty",
+    }),
+  pwd: z.string().min(6, { message: "Should contain minimum 6 digits" }),
 });
 const SignupInputSchema = z.object({
-  name: z.string(),
-  username: z.string().email({ message: "This should be of email format!!" }),
-  pwd: z.string().min(6, { message: "Should contain minimum 6 digits!!" }),
+  name: z.string().optional(),
+  username: z
+    .string()
+    .email({
+      message: "This should be of email format / username cannot be empty",
+    }),
+  pwd: z.string().min(6, { message: "Should contain minimum 6 digits" }),
 });
 
 // zod type inference
@@ -25,7 +33,6 @@ export const signinInpuValidationMiddleware = async (
   const statusCheck = SigninInputSchema.safeParse(body);
 
   if (statusCheck.success) {
-    c.set("body", body);
     await next();
   } else {
     c.status(400);
@@ -43,7 +50,6 @@ export const signupInpuValidationMiddleware = async (
   const statusCheck = SignupInputSchema.safeParse(body);
 
   if (statusCheck.success) {
-    c.set("body", body);
     await next();
   } else {
     c.status(400);
