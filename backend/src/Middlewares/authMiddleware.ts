@@ -10,17 +10,22 @@ const AuthMiddleware = async (c: Context, next: Next) => {
     return c.text("The header is not provided");
   }
 
-  const response = await verify(header, c.env.JWT_SECRET);
+  try {
+    const response = await verify(header, c.env.JWT_SECRET);
 
-  if (response) {
-    // passing the user id to the blogRoute so that it can be used by the blogs
-    c.set("userId", response.id);
-    await next();
-  } else {
+    if (response) {
+      // passing the user id to the blogRoute so that it can be used by the blogs
+      c.set("userId", response.id);
+      await next();
+    } else {
+      c.status(403);
+      return c.json({
+        message: "Error : Unauthorized",
+      });
+    }
+  } catch (e) {
     c.status(403);
-    return c.json({
-      message: "Error : Unauthorized",
-    });
+    return c.text(`Bad Request! ${e}`);
   }
 };
 
