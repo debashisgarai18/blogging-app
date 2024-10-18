@@ -15,7 +15,7 @@ export const postInputValMW = async (c: Context, next: Next) => {
   } else {
     c.status(404);
     return c.json({
-      message: "Invalid Inputs",
+      message: inputCheck.error?.errors,
     });
   }
 };
@@ -29,7 +29,7 @@ export const updatePostsMW = async (c: Context, next: Next) => {
   } else {
     c.status(404);
     return c.json({
-      message: "Invalid Inputs",
+      message: inputCheck.error?.errors,
     });
   }
 };
