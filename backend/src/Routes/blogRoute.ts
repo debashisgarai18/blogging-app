@@ -42,7 +42,6 @@ blogRoute.post("/postBlog", postInputValMW, async (c: Context) => {
 });
 
 // endpoint to update the blogs given a blog id
-// TODO : to keep a check that the author can update only his blogs, not other blogs
 blogRoute.put("/:blogId", updatePostsMW, async (c: Context) => {
   const blogId = c.req.param("blogId");
 
