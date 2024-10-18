@@ -13,13 +13,20 @@ const SignupInputSchema = z.object({
 });
 
 // zod type inference
-type updatedTypes = z.infer<typeof SigninInputSchema>;
+type updatedTypesSignin = z.infer<typeof SigninInputSchema>;
+type updatedTypesSignup = z.infer<typeof SignupInputSchema>;
 
-export const signinInpuValidationMiddleware = async (c: Context, next : Next) => {
-  const statusCheck = SigninInputSchema.safeParse(await c.req.json());
+export const signinInpuValidationMiddleware = async (
+  c: Context,
+  next: Next
+) => {
+  const body: updatedTypesSignin = await c.req.json();
+
+  const statusCheck = SigninInputSchema.safeParse(body);
 
   if (statusCheck.success) {
-    return await next();
+    c.set("body", body);
+    await next();
   } else {
     c.status(400);
     return c.json({
@@ -28,12 +35,16 @@ export const signinInpuValidationMiddleware = async (c: Context, next : Next) =>
   }
 };
 
-export const signupInpuValidationMiddleware = async (c: any, next: any) => {
-  const statusCheck = SigninInputSchema.safeParse(await c.req.json());
+export const signupInpuValidationMiddleware = async (
+  c: Context,
+  next: Next
+) => {
+  const body: updatedTypesSignup = await c.req.json();
+  const statusCheck = SignupInputSchema.safeParse(body);
 
   if (statusCheck.success) {
-    c.req.username = await c.req.json().username;
-    return await next();
+    c.set("body", body);
+    await next();
   } else {
     c.status(400);
     return c.json({

@@ -1,7 +1,7 @@
 import { Context, Hono, Next } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { sign, verify } from "hono/jwt";
+import { sign } from "hono/jwt";
 import {
   signinInpuValidationMiddleware,
   signupInpuValidationMiddleware,
@@ -28,7 +28,7 @@ app.post("/signup", signupInpuValidationMiddleware, async (c: Context) => {
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const { name, username, pwd } = await c.req.json();
+  const { name, username, pwd } = await c.get("body");
 
   // check if the username already exists
   const checkUser = await prisma.user.findUnique({
@@ -64,7 +64,7 @@ app.post("/signin", signinInpuValidationMiddleware, async (c: Context) => {
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const { username, pwd } = await c.req.json();
+  const { username, pwd } = await c.get("body");
   const findUser = await prisma.user.findUnique({
     where: {
       email: username,
