@@ -1,20 +1,16 @@
+import {
+  postInputSchema,
+  postInputType,
+  updateInputSchema,
+  updatePostType,
+} from "@deba018/blogs-common";
 import { Context, Next } from "hono";
-import { z } from "zod";
 
-const valSchema = z.object({
-  title: z.string({ message: "The title cannot be empty" }),
-  content: z.string({ message: "The contents cannot be empty" }),
-  thumbnail: z.string().optional(),
-});
-
-type valInputType = z.infer<typeof valSchema>;
-
-const postInputValMW = async (c: Context, next: Next) => {
-  const body: valInputType = await c.req.json();
-  const inputCheck = valSchema.safeParse(body);
+export const postInputValMW = async (c: Context, next: Next) => {
+  const body: postInputType = await c.req.json();
+  const inputCheck = postInputSchema.safeParse(body);
 
   if (inputCheck.success) {
-    c.set("body", body);
     await next();
   } else {
     c.status(404);
@@ -24,4 +20,16 @@ const postInputValMW = async (c: Context, next: Next) => {
   }
 };
 
-export default postInputValMW;
+export const updatePostsMW = async (c: Context, next: Next) => {
+  const body: updatePostType = await c.req.json();
+  const inputCheck = updateInputSchema.safeParse(body);
+
+  if (inputCheck.success) {
+    await next();
+  } else {
+    c.status(404);
+    return c.json({
+      message: "Invalid Inputs",
+    });
+  }
+};

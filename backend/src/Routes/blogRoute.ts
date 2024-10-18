@@ -1,8 +1,8 @@
 import { Hono, Context } from "hono";
 import AuthMiddleware from "../Middlewares/authMiddleware";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { Prisma, PrismaClient } from "@prisma/client/edge";
-import postInputValMW from "../Middlewares/posstInputValMW";
+import { PrismaClient } from "@prisma/client/edge";
+import { postInputValMW, updatePostsMW } from "../Middlewares/posstInputValMW";
 
 export const blogRoute = new Hono<{
   Bindings: {
@@ -42,7 +42,7 @@ blogRoute.post("/postBlog", postInputValMW, async (c: Context) => {
 });
 
 // endpoint to update the blogs given a blog id
-blogRoute.put("/:blogId", async (c: Context) => {
+blogRoute.put("/:blogId", updatePostsMW, async (c: Context) => {
   const blogId = c.req.param("blogId");
 
   const prisma = new PrismaClient({
