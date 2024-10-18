@@ -59,20 +59,28 @@ blogRoute.put("/:blogId", updatePostsMW, async (c: Context) => {
       },
     });
     if (idExists) {
-      const updatePosts = await prisma.post.update({
-        where: {
-          id: blogId,
-        },
-        data: {
-          title: body.title,
-          content: body.content,
-          thumbnail: body.thumbnail,
-        },
-      });
-      c.status(200);
-      return c.json({
-        message: updatePosts,
-      });
+      // check whether the user is the author of the blog or not
+      if (idExists.authorId !== c.get("userId")) {
+        c.status(404);
+        return c.json({
+          message: "You dont have access to edit this post",
+        });
+      } else {
+        const updatePosts = await prisma.post.update({
+          where: {
+            id: blogId,
+          },
+          data: {
+            title: body.title,
+            content: body.content,
+            thumbnail: body.thumbnail,
+          },
+        });
+        c.status(200);
+        return c.json({
+          message: updatePosts,
+        });
+      }
     } else {
       c.status(404);
       return c.json({
