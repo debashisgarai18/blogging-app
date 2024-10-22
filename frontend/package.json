@@ -13,7 +13,8 @@
     "@deba018/blogs-common": "^1.0.0",
     "axois": "^0.0.1-security",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
