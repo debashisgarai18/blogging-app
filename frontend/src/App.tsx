@@ -5,6 +5,8 @@ import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import WriteBlog from "./pages/WriteBlog";
 
+
+// TODO : Add lazy loading to the components -> React.lazy
 function App() {
   return (
     <>
