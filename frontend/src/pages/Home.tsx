@@ -1,8 +1,11 @@
+import HomeNavbar from "../components/HomeNavbar"
 
 // todo : modify this component
 const Home = () => {
   return (
-    <div>Home</div>
+    <div className="w-full">
+      <HomeNavbar />
+    </div>
   )
 }
 
