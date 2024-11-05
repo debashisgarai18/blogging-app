@@ -7,6 +7,8 @@ import WriteBlog from "./pages/WriteBlog";
 
 
 // TODO : Add lazy loading to the components -> React.lazy
+/// todo : create a wrapper component which will load all these stuufs and load that component as lazy loading in the app.tsx file
+
 function App() {
   return (
     <>
