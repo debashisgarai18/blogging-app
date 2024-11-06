@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@deba018/blogs-common": "^1.0.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.6",
     "axois": "^0.0.1-security",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

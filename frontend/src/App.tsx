@@ -1,28 +1,27 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Landing from "./pages/Landing";
-import Home from "./pages/Home";
-import Signin from "./pages/Signin";
-import Signup from "./pages/Signup";
-import WriteBlog from "./pages/WriteBlog";
+import { lazy, Suspense } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
 
-
-// TODO : Add lazy loading to the components -> React.lazy
-/// todo : create a wrapper component which will load all these stuufs and load that component as lazy loading in the app.tsx file
+const WrapperApp = lazy(() => import("./WrapperApp"));
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/postblog" element={<WriteBlog />} />
-        </Routes>
-      </BrowserRouter>
+      <Suspense fallback={<Loading />}>
+        <WrapperApp />
+      </Suspense>
     </>
   );
 }
+
+const Loading = () => {
+  return (
+    <div className="w-screen h-screen bg-[#F7F4ED] flex items-center justify-center">
+      <div className="w-full flex flex-col gap-[1rem] items-center justify-center">
+        <CircularProgress size="10%" />
+        <div className="text-[2.75rem]">Loading...</div>
+      </div>
+    </div>
+  );
+};
 
 export default App;
