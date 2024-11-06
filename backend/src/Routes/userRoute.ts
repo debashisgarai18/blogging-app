@@ -108,3 +108,5 @@ userRoute.post(
     }
   }
 );
+
+// todo : have the me endpoint to auth the user provided the JWt

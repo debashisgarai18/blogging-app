@@ -14,7 +14,7 @@ import { BACKEND_URL } from "../../config";
 import { useNavigate } from "react-router-dom";
 
 // todo : authenticate the page with the me endpoint
-// todo : if the page is not authenticated then send the user to the homepage
+// todo : if the page is authenticated(token is authenticated) then send the user to the homepage
 const Landing = () => {
   const [isSigninActive, setSigninActive] = useState(false);
   return (
