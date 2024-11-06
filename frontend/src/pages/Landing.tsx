@@ -13,6 +13,8 @@ import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
 import { useNavigate } from "react-router-dom";
 
+// todo : authenticate the page with the me endpoint
+// todo : if the page is not authenticated then send the user to the homepage
 const Landing = () => {
   const [isSigninActive, setSigninActive] = useState(false);
   return (
@@ -120,12 +122,12 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
         `${BACKEND_URL}v1/user/${authPref === "signin" ? "signin" : "signup"}`,
         formData
       );
-      localStorage.setItem("token", `Bearer ${resp.data.token}`);
-      nav("/home")
+      localStorage.setItem("token", `Bearer ${resp.data.message.token}`);
+      nav(`/home?user=${resp.data.message.name}`)
     } catch (err) {
       // some error handling
       const error = err as AxiosError<{ message?: string }>;
-      console.log(`Some error occured : ${error.response?.data?.message}`);
+      alert(`Some error occured : ${error.response?.data?.message}`);
     }
   };
 

@@ -44,7 +44,12 @@ userRoute.post(
         });
         const token = await sign({ id: response.id }, c.env.JWT_SECRET);
         c.status(200);
-        return c.json({ token: token });
+        return c.json({
+          message: {
+            token: token,
+            username: response.name,
+          },
+        });
       } else {
         c.status(404);
         return c.json({
@@ -52,7 +57,7 @@ userRoute.post(
         });
       }
     } catch (e) {
-      c.status(400);
+      c.status(500);
       return c.text(`Bad Request! Error : ${e}`);
     }
   }
@@ -89,7 +94,12 @@ userRoute.post(
         } else {
           const token = await sign({ id: findUser.id }, c.env.JWT_SECRET);
           c.status(200);
-          return c.json({ token: token });
+          return c.json({
+            message: {
+              token: token,
+              username: findUser.name,
+            },
+          });
         }
       }
     } catch (e) {

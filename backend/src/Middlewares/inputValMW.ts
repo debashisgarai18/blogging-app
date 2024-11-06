@@ -19,7 +19,7 @@ export const signinInpuValidationMiddleware = async (
   } else {
     c.status(400);
     return c.json({
-      message: statusCheck.error?.errors,
+      message: statusCheck.error?.errors.map((e) => e.message),
     });
   }
 };

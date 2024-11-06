@@ -5,7 +5,7 @@ export const SigninInputSchema = z.object({
   username: z.string().email({
     message: "This should be of email format / username cannot be empty",
   }),
-  pwd: z.string().min(6, { message: "Should contain minimum 6 digits" }),
+  pwd: z.string().min(6, { message: "Password Should contain minimum 6 digits" }),
 });
 
 export const SignupInputSchema = z.object({
@@ -13,7 +13,7 @@ export const SignupInputSchema = z.object({
   username: z.string().email({
     message: "This should be of email format / username cannot be empty",
   }),
-  pwd: z.string().min(6, { message: "Should contain minimum 6 digits" }),
+  pwd: z.string().min(6, { message: "Password Should contain minimum 6 digits" }),
 });
 
 export const postInputSchema = z.object({
