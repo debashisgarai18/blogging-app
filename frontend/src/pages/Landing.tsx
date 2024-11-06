@@ -6,6 +6,11 @@ import { useState } from "react";
 import { SigninContext } from "../Context";
 import { useMySignincontext } from "../Hooks/mySigninContextHook";
 import { RxCross2 } from "react-icons/rx";
+import { signupType } from "@deba018/blogs-common";
+import { FaRegEye } from "react-icons/fa6";
+import { FaRegEyeSlash } from "react-icons/fa6";
+import axios from "axios";
+import { BACKEND_URL } from "../../config";
 
 const Landing = () => {
   const [isSigninActive, setSigninActive] = useState(false);
@@ -74,13 +79,13 @@ const AuthComponent = () => {
             <AuthData
               label="Welcome back."
               setAuthPref={setAuthPref}
-              authPref={authPref}
+              authPref="signin"
             />
           ) : (
             <AuthData
               label="Join Blogspot."
               setAuthPref={setAuthPref}
-              authPref={authPref}
+              authPref="signup"
             />
           )}
         </div>
@@ -92,12 +97,36 @@ const AuthComponent = () => {
 interface AuthProps {
   label: string;
   setAuthPref: React.Dispatch<React.SetStateAction<string>>;
-  authPref: string;
+  authPref: "signin" | "signup";
 }
 
 const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
+  // states
+  // inferred the types from the common file
+  const [formData, setFormData] = useState<signupType>({
+    name: "",
+    username: "",
+    pwd: "",
+  });
+  const [showPwd, setShowPwd] = useState(false);
+
+  // function to send the request to the backend
+  const sendRequest = async () => {
+    try {
+      const resp = await axios.post(
+        `${BACKEND_URL}/v1/user/${authPref === "signin" ? "signin" : "signup"}`,
+        formData
+      );
+      localStorage.setItem("token", resp.data.token);
+    } catch (err) {
+      console.log(`Some error occured : ${err}`);
+    }
+  };
+
+  // function to handle form input
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    sendRequest();
   };
 
   return (
@@ -114,33 +143,64 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
         <form
           action="submit"
           onSubmit={handleFormSubmit}
-          className="w-[70%] flex flex-col gap-[1.75rem]"
+          className="w-[70%] flex flex-col gap-[1.75rem] items-center"
         >
           <div
             className={`w-full ${authPref === "signin" ? "hidden" : "block"}`}
           >
             <input
               type="text"
-              name=""
+              name="fullName"
               className="w-full px-[1rem] py-[1rem] border-[1px] border-[#6b6b6b] rounded-3xl focus:outline-none "
               placeholder="Full Name"
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
             />
           </div>
           <div className="w-full">
             <input
               type="text"
-              name=""
+              name="email"
               className="w-full px-[1rem] py-[1rem] border-[1px] border-[#6b6b6b] rounded-3xl focus:outline-none "
               placeholder="Email"
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
             />
           </div>
-          <div className="w-full">
+          <div className="w-full flex items-center border-[1px] border-[#6b6b6b] rounded-3xl pr-[1rem]">
             <input
-              type="text"
-              name=""
-              className="w-full px-[1rem] py-[1rem] border-[1px] border-[#6b6b6b] rounded-3xl focus:outline-none "
+              type={showPwd ? "text" : "password"}
+              name="password"
+              className="w-full px-[1rem] py-[1rem] rounded-3xl focus:outline-none "
               placeholder="Password"
+              onChange={(e) =>
+                setFormData({ ...formData, pwd: e.target.value })
+              }
             />
+            {showPwd ? (
+              <FaRegEyeSlash
+                className="text-2xl cursor-pointer"
+                onClick={() => setShowPwd((prev) => !prev)}
+              />
+            ) : (
+              <FaRegEye
+                className="text-2xl cursor-pointer"
+                onClick={() => setShowPwd((prev) => !prev)}
+              />
+            )}
+          </div>
+          <div className="w-[50%]">
+            <button
+              type="submit"
+              className="bg-black w-full text-white px-[1rem] py-[0.75rem] rounded-full text-xl"
+              style={{
+                fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
+              }}
+            >
+              {authPref === "signin" ? "Sign In" : "Sign Up"}
+            </button>
           </div>
         </form>
         <div
