@@ -9,8 +9,9 @@ import { RxCross2 } from "react-icons/rx";
 import { signupType } from "@deba018/blogs-common";
 import { FaRegEye } from "react-icons/fa6";
 import { FaRegEyeSlash } from "react-icons/fa6";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
+import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
   const [isSigninActive, setSigninActive] = useState(false);
@@ -101,6 +102,8 @@ interface AuthProps {
 }
 
 const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
+  const nav = useNavigate()
+
   // states
   // inferred the types from the common file
   const [formData, setFormData] = useState<signupType>({
@@ -114,12 +117,15 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
   const sendRequest = async () => {
     try {
       const resp = await axios.post(
-        `${BACKEND_URL}/v1/user/${authPref === "signin" ? "signin" : "signup"}`,
+        `${BACKEND_URL}v1/user/${authPref === "signin" ? "signin" : "signup"}`,
         formData
       );
-      localStorage.setItem("token", resp.data.token);
+      localStorage.setItem("token", `Bearer ${resp.data.token}`);
+      nav("/home")
     } catch (err) {
-      console.log(`Some error occured : ${err}`);
+      // some error handling
+      const error = err as AxiosError<{ message?: string }>;
+      console.log(`Some error occured : ${error.response?.data?.message}`);
     }
   };
 
