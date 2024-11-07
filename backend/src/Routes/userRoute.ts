@@ -110,8 +110,8 @@ userRoute.post(
   }
 );
 
-// todo : have the me endpoint to auth the user provided the JWt
-userRoute.post("/me", AuthMiddleware, async (c: Context) => {
+// function as me endpoint to auth the user when the token is provided
+userRoute.get("/me", AuthMiddleware, async (c: Context) => {
   const userId = c.get("userId");
 
   // initiate the prisma client
@@ -121,15 +121,19 @@ userRoute.post("/me", AuthMiddleware, async (c: Context) => {
 
   try {
     const resp = await prisma.user.findUnique({
-      where : {
-        id : userId
-      }
-    })
-    console.log(resp)
+      where: {
+        id: userId,
+      },
+    });
+
+    c.status(200);
+    return c.json({
+      message: resp,
+    });
   } catch (err) {
     c.status(500);
     return c.json({
-      message: `Internal Server Error : ${err}`
+      message: `Internal Server Error : ${err}`,
     });
   }
 });

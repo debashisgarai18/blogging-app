@@ -2,7 +2,7 @@ import ParentButton from "../components/ParentButton";
 import Logo from "../assets/logo.webp";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SigninContext } from "../Context";
 import { useMySignincontext } from "../Hooks/mySigninContextHook";
 import { RxCross2 } from "react-icons/rx";
@@ -13,10 +13,35 @@ import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
 import { useNavigate } from "react-router-dom";
 
-// todo : authenticate the page with the me endpoint
-// todo : if the page is authenticated(token is authenticated) then send the user to the homepage
+
 const Landing = () => {
+  const nav = useNavigate();
+
+  // states
   const [isSigninActive, setSigninActive] = useState(false);
+
+  // authenticate this page with the me endpoint
+  useEffect(() => {
+    (async function () {
+      if (localStorage.getItem("token")) {
+        // check the me endpoint here
+        try {
+          const resp = await axios.get(`${BACKEND_URL}v1/user/me`, {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          });
+          nav(`/home?user=${resp.data.message.name}`);
+        } catch (err) {
+          const error = err as AxiosError<{ message: string }>;
+          console.log(`Some error : ${error.response?.data?.message}`);
+        }
+      } else {
+        nav("/");
+      }
+    })();
+  }, [nav]);
+
   return (
     <>
       <SigninContext.Provider value={{ isSigninActive, setSigninActive }}>
@@ -104,7 +129,7 @@ interface AuthProps {
 }
 
 const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   // states
   // inferred the types from the common file
@@ -123,7 +148,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
         formData
       );
       localStorage.setItem("token", `Bearer ${resp.data.message.token}`);
-      nav(`/home?user=${resp.data.message.name}`)
+      nav(`/home?user=${resp.data.message.name}`);
     } catch (err) {
       // some error handling
       const error = err as AxiosError<{ message?: string }>;

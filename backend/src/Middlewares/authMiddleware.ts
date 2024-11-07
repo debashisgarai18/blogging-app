@@ -15,7 +15,7 @@ const AuthMiddleware = async (c: Context, next: Next) => {
   try {
     const token = header.split(" ")[1];
     const response = await verify(token, c.env.JWT_SECRET);
-    
+
     if (response) {
       // passing the user id to the blogRoute so that it can be used by the blogs
       c.set("userId", response.id);
