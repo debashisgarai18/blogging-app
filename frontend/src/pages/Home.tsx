@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
 
-
+// todo : need to add the loading secene in the axios request.. loading should be stated to true till the request is completed
 const Home = () => {
   const nav = useNavigate()
 

@@ -13,7 +13,7 @@ import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
 import { useNavigate } from "react-router-dom";
 
-
+// todo : need to add the loading secene in the axios request.. loading should be stated to true till the request is completed
 const Landing = () => {
   const nav = useNavigate();
 
