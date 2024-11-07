@@ -3,6 +3,7 @@ import { sign } from "hono/jwt";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { signinInpuValidationMiddleware } from "../Middlewares/inputValMW";
+import AuthMiddleware from "../Middlewares/authMiddleware";
 
 export const userRoute = new Hono<{
   Bindings: {
@@ -110,3 +111,25 @@ userRoute.post(
 );
 
 // todo : have the me endpoint to auth the user provided the JWt
+userRoute.post("/me", AuthMiddleware, async (c: Context) => {
+  const userId = c.get("userId");
+
+  // initiate the prisma client
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const resp = await prisma.user.findUnique({
+      where : {
+        id : userId
+      }
+    })
+    console.log(resp)
+  } catch (err) {
+    c.status(500);
+    return c.json({
+      message: `Internal Server Error : ${err}`
+    });
+  }
+});

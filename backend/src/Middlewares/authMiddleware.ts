@@ -7,12 +7,15 @@ const AuthMiddleware = async (c: Context, next: Next) => {
   // checking whether the header is empty or not
   if (!header) {
     c.status(404);
-    return c.text("The header is not provided");
+    return c.json({
+      message: "The auth token is not provided",
+    });
   }
 
   try {
-    const response = await verify(header, c.env.JWT_SECRET);
-
+    const token = header.split(" ")[1];
+    const response = await verify(token, c.env.JWT_SECRET);
+    
     if (response) {
       // passing the user id to the blogRoute so that it can be used by the blogs
       c.set("userId", response.id);
