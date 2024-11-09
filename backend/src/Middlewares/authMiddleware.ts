@@ -1,6 +1,7 @@
 import { Context, Next } from "hono";
 import { verify } from "hono/jwt";
 
+// todo : also verify the jwt token received from the google auth using admin verify token
 const AuthMiddleware = async (c: Context, next: Next) => {
   const header: string | undefined = c.req.header("Authorization");
 

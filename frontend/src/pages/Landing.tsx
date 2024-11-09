@@ -14,6 +14,10 @@ import { BACKEND_URL } from "../../config/config";
 import { useNavigate } from "react-router-dom";
 import { useLoadingContext } from "../Hooks/myLoadingHook";
 import Loading from "../components/Loading";
+import { FcGoogle } from "react-icons/fc";
+import { FirebaseError } from "firebase/app";
+import { signInWithPopup } from "firebase/auth";
+import { auth, Provider } from "@/firebase/firebase";
 
 const Landing = () => {
   const nav = useNavigate();
@@ -146,6 +150,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
   const [showPwd, setShowPwd] = useState(false);
   const { setIsLoading } = useLoadingContext();
 
+  // functions
   // function to send the request to the backend
   const sendRequest = async () => {
     try {
@@ -169,6 +174,24 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
     e.preventDefault();
     sendRequest();
   };
+
+  // function to handle google auth
+  const handleGoogleAuthClick = async (authPref : "signin" | "signup") => {
+    try{
+      const resp = await signInWithPopup(auth, Provider);
+      const idToken = await resp.user.getIdToken();
+      console.log(authPref, resp.user, idToken)
+      // todo : if the authPref is signup then put the user details in the DB to create the user, store the idToken in the localStorage and nav to home page   
+      // todo : else just auth the user and proceed to the home page 
+    }
+    catch(firebaseError){
+      if (firebaseError instanceof FirebaseError) {
+        console.log(`Some error: ${firebaseError.message}`);
+      } else {
+        console.log("An unknown error occurred");
+      }
+    }
+  }
 
   return (
     <div className="w-full h-full flex flex-col gap-[5rem] items-center justify-center">
@@ -232,7 +255,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
               />
             )}
           </div>
-          <div className="w-[50%]">
+          <div className="w-[70%]">
             <button
               type="submit"
               className="bg-black w-full text-white px-[1rem] py-[0.75rem] rounded-full text-xl"
@@ -241,6 +264,24 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
               }}
             >
               {authPref === "signin" ? "Sign In" : "Sign Up"}
+            </button>
+          </div>
+          {/* // button for google signin / signup */}
+          <div className="w-[70%]">
+            <button
+              className="bg-white border-2 border-black w-full text-black px-[1rem] py-[0.75rem] rounded-full text-xl capitalize flex items-center justify-center gap-[1rem]"
+              style={{
+                fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
+              }}
+              type="button"
+              onClick={() => handleGoogleAuthClick(authPref)}
+            >
+              <FcGoogle className="text-xl" />{" "}
+              <div>
+                {authPref === "signin"
+                  ? "Sign In with google"
+                  : "Sign Up with google"}
+              </div>
             </button>
           </div>
         </form>

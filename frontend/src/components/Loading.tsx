@@ -7,7 +7,9 @@ const Loading = () => {
       <div className="w-screen h-screen absolute bg-transparent flex items-center justify-center z-50">
         <div className="w-full flex flex-col gap-[1rem] items-center justify-center">
           <CircularProgress size="5%" />
-          <div className="text-[2.75rem]">Loading...</div>
+          <div className="text-[1.5rem] md:text-[2.75rem] font-medium">
+            Loading...
+          </div>
         </div>
       </div>
     </>
