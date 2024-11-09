@@ -140,3 +140,6 @@ userRoute.get("/me", AuthMiddleware, async (c: Context) => {
 
 // todo : one endpoint for the google auth signup -> to store the userData in the DB
 // todo : one endpoint for the google auth signin
+// userRoute.post("/signup/googleAuth", (c : Context) => {
+
+// })
