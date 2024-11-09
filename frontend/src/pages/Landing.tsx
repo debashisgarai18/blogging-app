@@ -12,6 +12,8 @@ import { FaRegEyeSlash } from "react-icons/fa6";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config/config";
 import { useNavigate } from "react-router-dom";
+import { useLoadingContext } from "../Hooks/myLoadingHook";
+import Loading from "../components/Loading";
 
 // todo : need to add the loading secene in the axios request.. loading should be stated to true till the request is completed
 const Landing = () => {
@@ -19,6 +21,7 @@ const Landing = () => {
 
   // states
   const [isSigninActive, setSigninActive] = useState(false);
+  const { isLoading, setIsLoading } = useLoadingContext();
 
   // authenticate this page with the me endpoint
   useEffect(() => {
@@ -26,11 +29,13 @@ const Landing = () => {
       if (localStorage.getItem("token")) {
         // check the me endpoint here
         try {
+          setIsLoading((prev) => !prev);
           const resp = await axios.get(`${BACKEND_URL}v1/user/me`, {
             headers: {
               Authorization: localStorage.getItem("token"),
             },
           });
+          setIsLoading((prev) => !prev);
           nav(`/home?user=${resp.data.message.name}`);
         } catch (err) {
           const error = err as AxiosError<{ message: string }>;
@@ -40,10 +45,11 @@ const Landing = () => {
         nav("/");
       }
     })();
-  }, [nav]);
+  }, [nav, setIsLoading]);
 
   return (
     <>
+      {isLoading && <Loading />}
       <SigninContext.Provider value={{ isSigninActive, setSigninActive }}>
         <Navbar />
       </SigninContext.Provider>
@@ -139,15 +145,18 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
     pwd: "",
   });
   const [showPwd, setShowPwd] = useState(false);
+  const { setIsLoading } = useLoadingContext();
 
   // function to send the request to the backend
   const sendRequest = async () => {
     try {
+      setIsLoading((prev) => !prev);
       const resp = await axios.post(
         `${BACKEND_URL}v1/user/${authPref === "signin" ? "signin" : "signup"}`,
         formData
       );
       localStorage.setItem("token", `Bearer ${resp.data.message.token}`);
+      setIsLoading((prev) => !prev);
       nav(`/home?user=${resp.data.message.username}`);
     } catch (err) {
       // some error handling
