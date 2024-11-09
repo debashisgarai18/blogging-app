@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { useLoadingContext } from "../Hooks/myLoadingHook";
 import Loading from "../components/Loading";
 
-// todo : need to add the loading secene in the axios request.. loading should be stated to true till the request is completed
 const Landing = () => {
   const nav = useNavigate();
 

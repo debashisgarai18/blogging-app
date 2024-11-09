@@ -13,7 +13,7 @@ export const userRoute = new Hono<{
 }>();
 
 // TODO : Password encryption by the use of web crypto in cloudfare (for both signin and signup)
-// TODO : ==> Later : Add bcrypt like package for the passwod encryption
+// TODO : ==> Later : Add bcrypt like package for the password encryption
 // the signup endpoint
 userRoute.post(
   "/signup",

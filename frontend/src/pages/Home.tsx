@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import HomeNavbar from "../components/HomeNavbar";
 import { ViewBlogs } from "../components/TaskSection";
 import { useEffect } from "react";
@@ -7,12 +7,15 @@ import { BACKEND_URL } from "../../config/config";
 import { useLoadingContext } from "../Hooks/myLoadingHook";
 import Loading from "../components/Loading";
 
-// todo : need to add the loading secene in the axios request.. loading should be stated to true till the request is completed
 const Home = () => {
   const nav = useNavigate();
 
   // states
   const { isLoading, setIsLoading } = useLoadingContext();
+  const [searchParams] = useSearchParams();
+
+  // get the username
+  const user = searchParams.get("user") || "";
 
   // function to cehck that the endpoint is authenticated or not
   // if not send it back to the homepage to signin
@@ -47,7 +50,7 @@ const Home = () => {
     <>
       {isLoading && <Loading />}
       <div className="w-full flex items-center flex-col">
-        <HomeNavbar />
+        <HomeNavbar userAvatar={user[0]} />
         <BlogContainer />
       </div>
     </>
