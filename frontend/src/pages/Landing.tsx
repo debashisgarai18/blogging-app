@@ -10,7 +10,7 @@ import { signupType } from "@deba018/blogs-common";
 import { FaRegEye } from "react-icons/fa6";
 import { FaRegEyeSlash } from "react-icons/fa6";
 import axios, { AxiosError } from "axios";
-import { BACKEND_URL } from "../../config";
+import { BACKEND_URL } from "../../config/config";
 import { useNavigate } from "react-router-dom";
 
 // todo : need to add the loading secene in the axios request.. loading should be stated to true till the request is completed
@@ -148,7 +148,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
         formData
       );
       localStorage.setItem("token", `Bearer ${resp.data.message.token}`);
-      nav(`/home?user=${resp.data.message.name}`);
+      nav(`/home?user=${resp.data.message.username}`);
     } catch (err) {
       // some error handling
       const error = err as AxiosError<{ message?: string }>;

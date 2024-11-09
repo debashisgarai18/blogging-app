@@ -10,7 +10,7 @@ const HomeNavbar = () => {
         <div className="items-center gap-[0.5rem] bg-[#F9F9F9] px-[0.75rem] py-[0.5rem] rounded-full hidden md:flex">
           <CiSearch className="text-2xl" />
           <div>
-            <input type="text" className="outline-none" placeholder="Search" />
+            <input type="text" className="outline-none bg-transparent" placeholder="Search" />
           </div>
         </div>
       </div>
