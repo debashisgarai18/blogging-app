@@ -3,7 +3,6 @@ import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config/config";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { CiSearch } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import {
   DropdownMenu,
@@ -63,15 +62,20 @@ const WriteBlog = () => {
 };
 
 const PostBlogNavbar = ({ userName }: { userName: string }) => {
+  const nav = useNavigate();
+
   return (
     <>
       <div className="w-full md:w-[80%]">
         <div className="w-full flex justify-between px-[2rem] py-[1rem] ">
           <div className="flex items-center gap-[0.75rem]">
-            <div className="text-3xl font-bold">Blogspot</div>
-            <div className="capitalize">
-              draft
+            <div
+              className="text-3xl font-bold"
+              onClick={() => nav(`/home?user=${userName}`)}
+            >
+              Blogspot
             </div>
+            <div className="capitalize hidden md:block">draft</div>
           </div>
           <div
             className="flex items-center gap-[1rem]"
@@ -79,15 +83,17 @@ const PostBlogNavbar = ({ userName }: { userName: string }) => {
               fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
             }}
           >
+            {/* // todo : display the error message if someone tries to publish with empty fields
+            // todo : change the color of the button till the fields are not filled */}
             <div>
               <button className="text-base bg-[#1e8f1a] hover:bg-[#0F730C] text-white px-[0.75rem] py-[0.3rem] rounded-full">
                 Publish
               </button>
             </div>
-            <CiSearch className="text-2xl block md:hidden" />
             <div>
               <IoIosNotificationsOutline className="text-2xl text-[#7D7D7D] hover:text-black cursor-pointer" />
             </div>
+            {/* // todo : modify this dropdown menu according to the website */}
             <DropdownMenu>
               <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer">
                 <DropdownMenuTrigger className="text-2xl font-semibold text-white">

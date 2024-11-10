@@ -30,7 +30,12 @@ const HomeNavbar = ({ userName }: { userName: string }) => {
   return (
     <div className="w-full flex justify-between px-[2rem] py-[1rem] border-b-[1px] border-b-[#f2f1f1]">
       <div className="flex items-center gap-[1rem]">
-        <div className="text-3xl font-bold">Blogspot</div>
+        <div
+          className="text-3xl font-bold"
+          onClick={() => nav(`/home?user=${userName}`)}
+        >
+          Blogspot
+        </div>
         <div className="items-center gap-[0.5rem] bg-[#F9F9F9] px-[0.75rem] py-[0.5rem] rounded-full hidden md:flex">
           <CiSearch className="text-2xl" />
           <div>
@@ -59,6 +64,7 @@ const HomeNavbar = ({ userName }: { userName: string }) => {
         <div>
           <IoIosNotificationsOutline className="text-2xl text-[#7D7D7D] hover:text-black cursor-pointer" />
         </div>
+        {/* // todo : modify this dropdown menu according to the website */}
         <DropdownMenu>
           <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer">
             <DropdownMenuTrigger className="text-2xl font-semibold text-white">
