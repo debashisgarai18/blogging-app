@@ -3,6 +3,7 @@ import AuthMiddleware from "../Middlewares/authMiddleware";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { PrismaClient } from "@prisma/client/edge";
 import { postInputValMW, updatePostsMW } from "../Middlewares/posstInputValMW";
+import { messaging } from "firebase-admin";
 
 export const blogRoute = new Hono<{
   Bindings: {
@@ -33,7 +34,7 @@ blogRoute.post("/postBlog", postInputValMW, async (c: Context) => {
     });
     c.status(200);
     return c.json({
-      message : `The post is created with ${blog.id}`,
+      message: `The post is created with ${blog.id}`,
     });
   } catch (e) {
     c.status(411);
@@ -100,11 +101,42 @@ blogRoute.get("/bulk", async (c: Context) => {
   }).$extends(withAccelerate());
   c.status(200);
 
+  interface blogType {
+    id: string;
+    title: string;
+    content: string;
+    publishedOn: Date;
+    thumbnail: string;
+    author?: string;
+    authorId: string;
+  }
+
   try {
     const blogs = await prisma.post.findMany();
+
+    // find the authorName specific to the authorID
+    // use of promise all --> when we use async inside a map
+    const fullBlogs: Array<blogType> = await Promise.all(
+      blogs.map(async (e) => {
+        const resp = await prisma.user.findUnique({
+          where: {
+            id: e.authorId,
+          },
+        });
+        return {
+          id: e.id,
+          title: e.title,
+          content: e.content,
+          thumbnail: e.thumbnail ?? "",
+          publishedOn: e.publishedOn,
+          author: resp?.name ?? "Unknown",
+          authorId: e.authorId,
+        };
+      })
+    );
     c.status(200);
     return c.json({
-      message: blogs,
+      message: fullBlogs,
     });
   } catch (e) {
     c.status(411);
