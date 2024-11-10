@@ -49,6 +49,7 @@ userRoute.post(
           message: {
             token: token,
             username: response.name,
+            email: response.email
           },
         });
       } else {
@@ -99,6 +100,7 @@ userRoute.post(
             message: {
               token: token,
               username: findUser.name,
+              email: findUser.email
             },
           });
         }

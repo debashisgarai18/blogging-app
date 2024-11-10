@@ -12,7 +12,7 @@ import {
 import { useLoadingContext } from "@/Hooks/myLoadingHook";
 import { useNavigate } from "react-router-dom";
 
-const HomeNavbar = ({ userName }: { userName: string }) => {
+const HomeNavbar = ({ userName, email }: { userName: string, email: string }) => {
   // hooks
   const { setIsLoading } = useLoadingContext();
   const nav = useNavigate();
@@ -55,7 +55,7 @@ const HomeNavbar = ({ userName }: { userName: string }) => {
       >
         <div
           className=" md:flex hidden items-center text-[#7D7D7D] hover:text-black gap-[0.5rem] cursor-pointer"
-          onClick={() => nav(`/postBlog?user=${userName}`)}
+          onClick={() => nav(`/postBlog?user=${userName}&email=${email}`)}
         >
           <HiOutlinePencilAlt className="text-2xl" />
           <div>Write</div>
@@ -67,7 +67,7 @@ const HomeNavbar = ({ userName }: { userName: string }) => {
         {/* // todo : modify this dropdown menu according to the website */}
         <DropdownMenu>
           <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer">
-            <DropdownMenuTrigger className="text-2xl font-semibold text-white">
+            <DropdownMenuTrigger className="text-2xl font-semibold text-white uppercase">
               {userName[0]}
             </DropdownMenuTrigger>
           </div>

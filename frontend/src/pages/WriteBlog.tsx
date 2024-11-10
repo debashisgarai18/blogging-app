@@ -21,6 +21,7 @@ const WriteBlog = () => {
 
   // states
   const user = searchParams.get("user") ?? "";
+  const email = searchParams.get("email") ?? "";
   const { setIsLoading } = useLoadingContext();
 
   // functions
@@ -55,13 +56,19 @@ const WriteBlog = () => {
 
   return (
     <div className="w-full h-screen flex flex-col items-center gap-[2.5rem]">
-      <PostBlogNavbar userName={user} />
+      <PostBlogNavbar userName={user} email={email} />
       <PostBlogContent />
     </div>
   );
 };
 
-const PostBlogNavbar = ({ userName }: { userName: string }) => {
+const PostBlogNavbar = ({
+  userName,
+  email,
+}: {
+  userName: string;
+  email: string;
+}) => {
   const nav = useNavigate();
 
   return (
@@ -95,19 +102,31 @@ const PostBlogNavbar = ({ userName }: { userName: string }) => {
             </div>
             {/* // todo : modify this dropdown menu according to the website */}
             <DropdownMenu>
-              <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer">
-                <DropdownMenuTrigger className="text-2xl font-semibold text-white">
+              <DropdownMenuTrigger className="text-2xl font-semibold text-white">
+                <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer uppercase">
                   {userName[0]}
-                </DropdownMenuTrigger>
-              </div>
+                </div>
+              </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel className="text-sm md:text-base">
-                  My Account
+                <DropdownMenuLabel className="text-sm md:text-base flex items-center gap-[0.5rem] py-[1rem]">
+                  <div className="w-[2.3rem] h-[2.3rem] text-white rounded-[50%] flex items-center justify-center bg-black cursor-pointer uppercase">
+                    {userName[0]}
+                  </div>
+                  <div className="fles flex-col justify-center">
+                    <div className="capitalize">{userName}</div>
+                    <div className="font-thin text-sm">@{email}</div>
+                  </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-sm md:text-base">
-                  Edit Profile
-                </DropdownMenuItem>
+                <div>
+                  <DropdownMenuItem className="text-sm md:text-base px-[0.75rem] cursor-pointer">
+                    Write
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-sm md:text-base px-[0.75rem] cursor-pointer">
+                    Edit Profile
+                  </DropdownMenuItem>
+                </div>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-sm md:text-base">
                   <button
                     className="bg-black w-full text-white px-[0.75rem] py-[0.5rem] rounded-full text-sm md:text-base"

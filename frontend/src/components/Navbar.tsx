@@ -25,6 +25,7 @@ const Navbar = () => {
                 label="Get Started"
                 textSize="text-sm"
                 width="w-full"
+                onClick={() => setSigninActive(true)}
               />
             </div>
           </div>

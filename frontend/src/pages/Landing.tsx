@@ -15,9 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useLoadingContext } from "../Hooks/myLoadingHook";
 import Loading from "../components/Loading";
 import { FcGoogle } from "react-icons/fc";
-import { FirebaseError } from "firebase/app";
-import { signInWithPopup } from "firebase/auth";
-import { auth, Provider } from "@/firebase/firebase";
+import Swal from "sweetalert2";
+import "sweetalert2/src/sweetalert2.scss";
 
 const Landing = () => {
   const nav = useNavigate();
@@ -43,7 +42,7 @@ const Landing = () => {
         } catch (err) {
           const error = err as AxiosError<{ message: string }>;
           console.log(`Some error : ${error.response?.data?.message}`);
-          nav("/")
+          nav("/");
         }
       } else {
         nav("/");
@@ -108,7 +107,7 @@ const AuthComponent = () => {
     <>
       <div className="absolute bg-white h-screen w-full top-0 text-white opacity-[0.95]"></div>
       <div className="absolute flex items-center justify-center bg-transparent h-screen w-full top-0 z-10">
-        <div className="md:w-[40%] md:h-[80%] w-full h-screen bg-white shadow-xl rounded-xl relative px-[2rem] py-[3rem]">
+        <div className="md:w-[40%] md:h-[90%] w-full h-screen bg-white shadow-xl rounded-xl relative px-[2rem] py-[3rem]">
           <RxCross2
             className="absolute top-5 right-5 text-black text-2xl cursor-pointer"
             onClick={() => setSigninActive(false)}
@@ -162,11 +161,24 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
       );
       localStorage.setItem("token", `Bearer ${resp.data.message.token}`);
       setIsLoading((prev) => !prev);
-      nav(`/home?user=${resp.data.message.username}`);
+      nav(
+        `/home?user=${resp.data.message.username}&email=${
+          resp.data.message.email.split("@")[0]
+        }`
+      );
     } catch (err) {
       // some error handling
       const error = err as AxiosError<{ message?: string }>;
-      alert(`Some error occured : ${error.response?.data?.message}`);
+      Swal.fire({
+        title: "Oops...",
+        text: error.response?.data?.message,
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#000000",
+      });
+      setIsLoading((prev) => !prev);
+      nav("/");
+      // alert(`Some error occured : ${error.response?.data?.message}`);
     }
   };
 
@@ -175,27 +187,26 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
     e.preventDefault();
     sendRequest();
   };
-
   // function to handle google auth
-  const handleGoogleAuthClick = async (authPref : "signin" | "signup") => {
-    try{
-      const resp = await signInWithPopup(auth, Provider);
-      const idToken = await resp.user.getIdToken();
-      console.log(authPref, resp.user, idToken)
-      // todo : if the authPref is signup then put the user details in the DB to create the user, store the idToken in the localStorage and nav to home page   
-      // todo : else just auth the user and proceed to the home page 
-    }
-    catch(firebaseError){
-      if (firebaseError instanceof FirebaseError) {
-        console.log(`Some error: ${firebaseError.message}`);
-      } else {
-        console.log("An unknown error occurred");
-      }
-    }
-  }
+  // const handleGoogleAuthClick = async (authPref : "signin" | "signup") => {
+  //   try{
+  //     const resp = await signInWithPopup(auth, Provider);
+  //     const idToken = await resp.user.getIdToken();
+  //     console.log(authPref, resp.user, idToken)
+  //     // todo : if the authPref is signup then put the user details in the DB to create the user, store the idToken in the localStorage and nav to home page
+  //     // todo : else just auth the user and proceed to the home page
+  //   }
+  //   catch(firebaseError){
+  //     if (firebaseError instanceof FirebaseError) {
+  //       console.log(`Some error: ${firebaseError.message}`);
+  //     } else {
+  //       console.log("An unknown error occurred");
+  //     }
+  //   }
+  // }
 
   return (
-    <div className="w-full h-full flex flex-col gap-[5rem] items-center justify-center">
+    <div className="w-full h-full flex flex-col gap-[5rem] items-center justify-center py-[1rem]">
       <div
         className="w-full text-center text-[28px]"
         style={{
@@ -275,7 +286,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
                 fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
               }}
               type="button"
-              onClick={() => handleGoogleAuthClick(authPref)}
+              // onClick={() => handleGoogleAuthClick(authPref)}
             >
               <FcGoogle className="text-xl" />{" "}
               <div>
