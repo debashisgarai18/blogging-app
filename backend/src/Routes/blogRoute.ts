@@ -33,7 +33,7 @@ blogRoute.post("/postBlog", postInputValMW, async (c: Context) => {
     });
     c.status(200);
     return c.json({
-      messgae: `The post is created with ${blog.id}`,
+      message : `The post is created with ${blog.id}`,
     });
   } catch (e) {
     c.status(411);
