@@ -65,11 +65,13 @@ const WriteBlog = () => {
 const PostBlogNavbar = ({ userName }: { userName: string }) => {
   return (
     <>
-      <div className="w-[80%]">
+      <div className="w-full md:w-[80%]">
         <div className="w-full flex justify-between px-[2rem] py-[1rem] ">
           <div className="flex items-center gap-[0.75rem]">
             <div className="text-3xl font-bold">Blogspot</div>
-            <div className="capitalize">draft in {userName}</div>
+            <div className="capitalize">
+              draft
+            </div>
           </div>
           <div
             className="flex items-center gap-[1rem]"
@@ -123,7 +125,7 @@ const PostBlogNavbar = ({ userName }: { userName: string }) => {
 const PostBlogContent = () => {
   return (
     <>
-      <div className="w-[60%] flex flex-col items-center gap-[1rem] justify-center">
+      <div className="w-full md:w-[60%] flex flex-col items-center gap-[1rem] justify-center">
         <input
           type="text"
           placeholder="Title"
