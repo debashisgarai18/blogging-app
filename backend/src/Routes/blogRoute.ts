@@ -167,3 +167,6 @@ blogRoute.get("/:blogId", async (c: Context) => {
     return c.text(`Bad Request! Error : ${e}`);
   }
 });
+
+// todo : one endpoint to delete the route from the db if the provided auther id === current user, else show error
+

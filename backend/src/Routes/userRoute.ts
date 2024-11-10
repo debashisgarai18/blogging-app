@@ -140,6 +140,10 @@ userRoute.get("/me", AuthMiddleware, async (c: Context) => {
   }
 });
 
+// todo : one endpoint to get the userDetails provided the authorId 
+// todo : endpoint which allows the user to edit their profiles
+
+// google auth (Later)
 // todo : one endpoint for the google auth signup -> to store the userData in the DB
 // todo : one endpoint for the google auth signin
 // userRoute.post("/signup/googleAuth", (c : Context) => {
