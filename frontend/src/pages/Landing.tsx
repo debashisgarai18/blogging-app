@@ -43,6 +43,7 @@ const Landing = () => {
         } catch (err) {
           const error = err as AxiosError<{ message: string }>;
           console.log(`Some error : ${error.response?.data?.message}`);
+          nav("/")
         }
       } else {
         nav("/");

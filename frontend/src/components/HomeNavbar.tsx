@@ -12,7 +12,7 @@ import {
 import { useLoadingContext } from "@/Hooks/myLoadingHook";
 import { useNavigate } from "react-router-dom";
 
-const HomeNavbar = ({ userAvatar }: { userAvatar: string }) => {
+const HomeNavbar = ({ userName }: { userName: string }) => {
   // hooks
   const { setIsLoading } = useLoadingContext();
   const nav = useNavigate();
@@ -48,7 +48,10 @@ const HomeNavbar = ({ userAvatar }: { userAvatar: string }) => {
           fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
         }}
       >
-        <div className=" md:flex hidden items-center text-[#7D7D7D] hover:text-black gap-[0.5rem] cursor-pointer">
+        <div
+          className=" md:flex hidden items-center text-[#7D7D7D] hover:text-black gap-[0.5rem] cursor-pointer"
+          onClick={() => nav(`/postBlog?user=${userName}`)}
+        >
           <HiOutlinePencilAlt className="text-2xl" />
           <div>Write</div>
         </div>
@@ -59,7 +62,7 @@ const HomeNavbar = ({ userAvatar }: { userAvatar: string }) => {
         <DropdownMenu>
           <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer">
             <DropdownMenuTrigger className="text-2xl font-semibold text-white">
-              {userAvatar}
+              {userName[0]}
             </DropdownMenuTrigger>
           </div>
           <DropdownMenuContent>
@@ -72,7 +75,7 @@ const HomeNavbar = ({ userAvatar }: { userAvatar: string }) => {
             </DropdownMenuItem>
             <DropdownMenuItem className="text-lg md:text-xl">
               <button
-                className="bg-black w-full text-white px-[1rem] py-[0.75rem] rounded-full text-xl"
+                className="bg-black w-full text-white px-[0.75rem] py-[0.5rem] rounded-full text-sm md:text-base"
                 style={{
                   fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
                 }}

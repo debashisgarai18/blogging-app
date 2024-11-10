@@ -36,7 +36,7 @@ const Home = () => {
         } catch (err) {
           const error = err as AxiosError<{ message: string }>;
           console.log(`Some error : ${error.response?.data?.message}`);
-          alert("you are not authenticated");
+          alert("You are not authenticated")
           nav("/");
         }
       } else {
@@ -50,7 +50,7 @@ const Home = () => {
     <>
       {isLoading && <Loading />}
       <div className="w-full flex items-center flex-col">
-        <HomeNavbar userAvatar={user[0]} />
+        <HomeNavbar userName={user} />
         <BlogContainer />
       </div>
     </>
