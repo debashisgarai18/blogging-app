@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+import Loading from "@/components/Loading";
 
 const WriteBlog = () => {
   // hooks
@@ -22,7 +23,7 @@ const WriteBlog = () => {
   // states
   const user = searchParams.get("user") ?? "";
   const email = searchParams.get("email") ?? "";
-  const { setIsLoading } = useLoadingContext();
+  const { isLoading, setIsLoading } = useLoadingContext();
 
   // functions
   // this should load if there exists a token in the localStorage
@@ -55,10 +56,13 @@ const WriteBlog = () => {
   }, [nav, setIsLoading]);
 
   return (
-    <div className="w-full h-screen flex flex-col items-center gap-[2.5rem]">
-      <PostBlogNavbar userName={user} email={email} />
-      <PostBlogContent />
-    </div>
+    <>
+      {isLoading && <Loading />}
+      <div className="w-full h-screen flex flex-col items-center gap-[2.5rem]">
+        <PostBlogNavbar userName={user} email={email} />
+        <PostBlogContent />
+      </div>
+    </>
   );
 };
 
@@ -71,14 +75,17 @@ const PostBlogNavbar = ({
 }) => {
   const nav = useNavigate();
 
+  // states
+  const { setIsLoading } = useLoadingContext();
+
   return (
     <>
       <div className="w-full md:w-[80%]">
         <div className="w-full flex justify-between px-[2rem] py-[1rem] ">
           <div className="flex items-center gap-[0.75rem]">
             <div
-              className="text-3xl font-bold"
-              onClick={() => nav(`/home?user=${userName}`)}
+              className="text-3xl font-bold cursor-pointer"
+              onClick={() => nav(`/home?user=${userName}&email=${email}`)}
             >
               Blogspot
             </div>
@@ -100,9 +107,8 @@ const PostBlogNavbar = ({
             <div>
               <IoIosNotificationsOutline className="text-2xl text-[#7D7D7D] hover:text-black cursor-pointer" />
             </div>
-            {/* // todo : modify this dropdown menu according to the website */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="text-2xl font-semibold text-white">
+              <DropdownMenuTrigger className="text-lg md:text-2xl font-semibold text-white">
                 <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer uppercase">
                   {userName[0]}
                 </div>
@@ -119,7 +125,12 @@ const PostBlogNavbar = ({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <div>
-                  <DropdownMenuItem className="text-sm md:text-base px-[0.75rem] cursor-pointer">
+                  <DropdownMenuItem
+                    className="text-sm md:text-base px-[0.75rem] cursor-pointer"
+                    onClick={() =>
+                      nav(`/postBlog?user=${userName}&email=${email}`)
+                    }
+                  >
                     Write
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-sm md:text-base px-[0.75rem] cursor-pointer">
@@ -132,6 +143,12 @@ const PostBlogNavbar = ({
                     className="bg-black w-full text-white px-[0.75rem] py-[0.5rem] rounded-full text-sm md:text-base"
                     style={{
                       fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
+                    }}
+                    onClick={() => {
+                      setIsLoading((prev) => !prev);
+                      localStorage.removeItem("token");
+                      nav("/");
+                      setIsLoading((prev) => !prev);
                     }}
                   >
                     {" "}
