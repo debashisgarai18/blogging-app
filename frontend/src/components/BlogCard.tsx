@@ -24,16 +24,16 @@ const BlogCard = ({
   return (
     <div
       className="w-full flex flex-col cursor-pointer"
-      onClick={() => {
-        setIsLoading((prev) => !prev);
-        nav(`/displayBlog?user=${userName}&email=${email}`);
-        setIsLoading((prev) => !prev);
-      }}
     >
       {content.map((e) => {
         return (
           <div
             className="flex w-full py-[1rem] border-b-[1px] gap-[1rem] border-b-[#6B6B6B] flex-col"
+            onClick={() => {
+                setIsLoading((prev) => !prev);
+                nav(`/displayBlog?user=${userName}&email=${email}&blogid=${e.id}`);
+                setIsLoading((prev) => !prev);
+              }}
             key={e.id}
           >
             {/* // avatar + username */}
