@@ -49,7 +49,7 @@ userRoute.post(
           message: {
             token: token,
             username: response.name,
-            email: response.email
+            email: response.email,
           },
         });
       } else {
@@ -100,7 +100,7 @@ userRoute.post(
             message: {
               token: token,
               username: findUser.name,
-              email: findUser.email
+              email: findUser.email,
             },
           });
         }
@@ -140,7 +140,39 @@ userRoute.get("/me", AuthMiddleware, async (c: Context) => {
   }
 });
 
-// todo : one endpoint to get the userDetails provided the authorId 
+// endpoint to get the userDetails provided the authorId
+userRoute.get("/userDetails/:authorId", async (c: Context) => {
+  const authId = c.req.param("authorId");
+
+  // prisma init
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const getUserDetails = await prisma.user.findUnique({
+      where: {
+        id: authId,
+      },
+      select : {
+        id : true,
+        name : true,
+        email : true,
+        posts : true
+      }
+    });
+    c.status(200);
+    return c.json({
+      userDetails: getUserDetails,
+    });
+  } catch (err) {
+    c.status(404);
+    return c.json({
+      message: `Some error : ${err}`,
+    });
+  }
+});
+
 // todo : endpoint which allows the user to edit their profiles
 
 // google auth (Later)

@@ -3,7 +3,7 @@ import AuthMiddleware from "../Middlewares/authMiddleware";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { PrismaClient } from "@prisma/client/edge";
 import { postInputValMW, updatePostsMW } from "../Middlewares/posstInputValMW";
-import { messaging } from "firebase-admin";
+import { auth, messaging } from "firebase-admin";
 
 export const blogRoute = new Hono<{
   Bindings: {
@@ -32,6 +32,7 @@ blogRoute.post("/postBlog", postInputValMW, async (c: Context) => {
         authorId: authorId,
       },
     });
+
     c.status(200);
     return c.json({
       message: `The post is created with ${blog.id}`,
