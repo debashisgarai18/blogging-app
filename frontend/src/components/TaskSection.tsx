@@ -40,7 +40,6 @@ const Allblogs = () => {
           }
         })
         setIsLoading(prev => !prev)
-        console.log(resp.data.message)
         setBlogContent(resp.data.message)
       }
       catch(err){
@@ -48,7 +47,7 @@ const Allblogs = () => {
         console.log(`Some Axios Error : ${error.response?.data?.message}`)
       }
     })()
-  }, [])
+  }, [setIsLoading])
   
   return <div className="w-full md:w-[75%] px-[1rem]">
     <BlogCategoriesRenderer />

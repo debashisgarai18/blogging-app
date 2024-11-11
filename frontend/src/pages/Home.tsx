@@ -56,7 +56,7 @@ const Home = () => {
           icon: "error",
           title: "Oops...",
           text: "You are not Authenticated",
-          confirmButtonColor: "#000000"
+          confirmButtonColor: "#000000",
         });
         nav("/");
       }

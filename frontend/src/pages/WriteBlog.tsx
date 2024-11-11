@@ -85,7 +85,11 @@ const PostBlogNavbar = ({
           <div className="flex items-center gap-[0.75rem]">
             <div
               className="text-3xl font-bold cursor-pointer"
-              onClick={() => nav(`/home?user=${userName}&email=${email}`)}
+              onClick={() => {
+                setIsLoading((prev) => !prev);
+                nav(`/home?user=${userName}&email=${email}`);
+                setIsLoading((prev) => !prev);
+              }}
             >
               Blogspot
             </div>

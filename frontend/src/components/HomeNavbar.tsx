@@ -70,13 +70,13 @@ const HomeNavbar = ({
         <DropdownMenu>
               <DropdownMenuTrigger className="text-lg md:text-2xl font-semibold text-white">
                 <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer uppercase">
-                  {userName[0]}
+                  {userName && userName[0]}
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel className="text-sm md:text-base flex items-center gap-[0.5rem] py-[1rem]">
                   <div className="w-[1.75rem] h-[1.75rem] md:w-[2.3rem] md:h-[2.3rem] text-white rounded-[50%] flex items-center justify-center text-xs md:text-base bg-black cursor-pointer uppercase">
-                    {userName[0]}
+                    {userName && userName[0]}
                   </div>
                   <div className="fles flex-col justify-center">
                     <div className="capitalize hidden md:block">{userName}</div>
