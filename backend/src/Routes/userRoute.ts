@@ -173,6 +173,15 @@ userRoute.get("/userDetails/:authorId", async (c: Context) => {
   }
 });
 
+// endpoint to upload the image to the cloudinary
+userRoute.post("/uploadImage", AuthMiddleware, async (c : Context) => {
+  const fileDetails = await c.req.json();
+  console.log(fileDetails)
+  return c.json({
+    message : "Image uploaded"
+  })
+})
+
 // todo : endpoint which allows the user to edit their profiles
 
 // google auth (Later)
