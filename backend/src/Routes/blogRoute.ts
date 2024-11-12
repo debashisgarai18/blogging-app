@@ -43,8 +43,57 @@ blogRoute.post("/postBlog", postInputValMW, async (c: Context) => {
   }
 });
 
+// endpoint to delete the blog given a blog ID
+blogRoute.delete("/deleteBlog/:blogId", async (c: Context) => {
+  const blogId = c.req.param("blogId");
+  const currUser = c.get("userId");
+
+  // intialize prisma client
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    // check whether the auth of the blog and the curr user is same
+    const blogDetails = await prisma.post.findUnique({
+      where: {
+        id: blogId,
+      },
+    });
+    // cannot delete
+    if (blogDetails?.authorId !== currUser) {
+      c.status(403);
+      return c.json({
+        message: "Cannot delete! Unauthorized",
+      });
+    }
+
+    try {
+      await prisma.post.delete({
+        where: {
+          id: blogId,
+        },
+      });
+      c.status(200);
+      return c.json({
+        message: `The blog with ${blogId} is deleted`,
+      });
+    } catch (err) {
+      c.status(500);
+      return c.json({
+        message: `Some internal Server Error : ${err}`,
+      });
+    }
+  } catch (err) {
+    c.status(500);
+    return c.json({
+      message: `Some internal Server Error : ${err}`,
+    });
+  }
+});
+
 // endpoint to update the blogs given a blog id
-blogRoute.put("/:blogId", updatePostsMW, async (c: Context) => {
+blogRoute.put("/updateBlog/:blogId", updatePostsMW, async (c: Context) => {
   const blogId = c.req.param("blogId");
 
   const prisma = new PrismaClient({
@@ -185,5 +234,3 @@ blogRoute.get("/:blogId", async (c: Context) => {
     return c.text(`Bad Request! Error : ${e}`);
   }
 });
-
-// todo : one endpoint to delete the post from the db if the provided auther id === current user, else show error
