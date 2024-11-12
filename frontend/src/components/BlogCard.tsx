@@ -1,5 +1,5 @@
 import { useLoadingContext } from "@/Hooks/myLoadingHook";
-import { TiDeleteOutline } from "react-icons/ti";
+import { useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const BlogCard = ({
@@ -20,20 +20,21 @@ const BlogCard = ({
   const { setIsLoading } = useLoadingContext();
   const userName = searchParams.get("user");
   const email = searchParams.get("email");
+  const imageRef = useRef<HTMLImageElement>(null);
 
   return (
-    <div
-      className="w-full flex flex-col cursor-pointer"
-    >
+    <div className="w-full flex flex-col cursor-pointer">
       {content.map((e) => {
         return (
           <div
             className="flex w-full py-[1rem] border-b-[1px] gap-[1rem] border-b-[#6B6B6B] flex-col"
             onClick={() => {
-                setIsLoading((prev) => !prev);
-                nav(`/displayBlog?user=${userName}&email=${email}&blogid=${e.id}`);
-                setIsLoading((prev) => !prev);
-              }}
+              setIsLoading((prev) => !prev);
+              nav(
+                `/displayBlog?user=${userName}&email=${email}&blogid=${e.id}`
+              );
+              setIsLoading((prev) => !prev);
+            }}
             key={e.id}
           >
             {/* // avatar + username */}
@@ -70,13 +71,21 @@ const BlogCard = ({
               </div>
               {/* // thumbnail */}
               <div className="w-[20%] h-full">
-                {/* // todo : replace the image with a valid url
-                        // todo : cond render the images, if url not valid then relace the imge with something else */}
-                <img
-                  src="https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg"
-                  alt="image"
-                  className="w-full h-full object-cover"
-                />
+                {/* // match the regex for the URL */}
+                {e.thumbnail.match(/^https:\/\/res\.cloudinary\.com\/dsqym1wwy\/image\/upload\/(.+)?$/) ? (
+                  <img
+                    ref={imageRef}
+                    src={e.thumbnail}
+                    alt="image"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src="https://images.pexels.com/photos/9881302/pexels-photo-9881302.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    alt="no thumbnail"
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
             </div>
             {/* //footer -> date + min read + delete button */}
@@ -84,9 +93,6 @@ const BlogCard = ({
               <div className="flex items-center gap-[0.5rem]">
                 <div>{e.publishedOn.split("T")[0]}</div>
                 <div>{Math.floor(e.content.length / 60)} min(s) read</div>
-              </div>
-              <div className="text-3xl">
-                <TiDeleteOutline />
               </div>
             </div>
           </div>

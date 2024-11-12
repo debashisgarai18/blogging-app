@@ -30,7 +30,6 @@ export const BlogCategoriesRenderer = () => {
           );
         })}
       </div>
-      <div className="w-full h-[1px] bg-[#eae9e9] absolute bottom-0 left-0"></div>
     </>
   );
 };

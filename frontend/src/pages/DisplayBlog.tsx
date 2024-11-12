@@ -139,10 +139,29 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
         {/* thumbnail part */}
         {/* // todo : replace this with the original thumbnail link */}
         <div className="w-full h-[450px]">
-          <img src="https://images.pexels.com/photos/57416/cat-sweet-kitty-animals-57416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Image here"  className="w-full h-full object-cover"/>
+          {post.thumbnail.match(
+            /^https:\/\/res\.cloudinary\.com\/dsqym1wwy\/image\/upload\/(.+)?$/
+          ) ? (
+            <img
+              src={post.thumbnail}
+              alt="image"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <img
+              src="https://images.pexels.com/photos/9881302/pexels-photo-9881302.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="no thumbnail"
+              className="w-full h-full object-cover"
+            />
+          )}
         </div>
         {/* content part */}
-        <div className="w-full text-xl" style={{fontFamily:`source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif`}}>
+        <div
+          className="w-full text-xl"
+          style={{
+            fontFamily: `source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif`,
+          }}
+        >
           {post.content}
         </div>
       </div>

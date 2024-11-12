@@ -58,8 +58,9 @@ const Allblogs = () => {
   );
 };
 
+// todo : Design this part 
 const Suggestions = () => {
   return (
-    <div className="w-[25%] hidden md:block bg-cyan-300 h-full">suggest</div>
+    <div className="w-[25%] hidden md:block h-full">Suggestions</div>
   );
 };
