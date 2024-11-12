@@ -1,6 +1,6 @@
 import { useLoadingContext } from "@/Hooks/myLoadingHook";
 import axios, { AxiosError } from "axios";
-import { BACKEND_URL } from "../../config/config";
+import { BACKEND_URL, CLOUDINARY_CLOUD_NAME } from "../../config/config";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IoIosNotificationsOutline } from "react-icons/io";
@@ -15,6 +15,7 @@ import {
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 import Loading from "@/components/Loading";
 import { postInputType } from "@deba018/blogs-common";
+import Swal from "sweetalert2";
 
 const WriteBlog = () => {
   // hooks
@@ -44,7 +45,12 @@ const WriteBlog = () => {
         } catch (err) {
           const error = err as AxiosError<{ message: string }>;
           console.log(`Some axios error : ${error.response?.data?.message}`);
-          alert("You are not authenticated");
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "You are not Authenticated",
+            confirmButtonColor: "#000000",
+          });
           nav("/");
         }
       };
@@ -61,7 +67,7 @@ const WriteBlog = () => {
       {isLoading && <Loading />}
       <div className="w-full h-screen flex flex-col items-center gap-[2.5rem]">
         <PostBlogNavbar userName={user} email={email} />
-        <PostBlogContent />
+        <PostBlogContent username={user} email={email} />
       </div>
     </>
   );
@@ -169,7 +175,13 @@ const PostBlogNavbar = ({
   );
 };
 
-const PostBlogContent = () => {
+const PostBlogContent = ({
+  username,
+  email,
+}: {
+  username: string;
+  email: string;
+}) => {
   // states
   const [blogInputs, setBlogInputs] = useState<postInputType>({
     title: "",
@@ -178,40 +190,99 @@ const PostBlogContent = () => {
   });
   const [file, setFile] = useState<File | null>(null);
 
+  // hooks
+  const { setIsLoading } = useLoadingContext();
+  const nav = useNavigate();
+
   // functions
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) setFile(selectedFile);
   };
-  
+
   // function to submit the filename to the endpoint
   const handleSubmit = async () => {
-    if(!file){
-      console.error("No file present")
-      return
+    // just a check that the title and the content cannot be empty
+    if (blogInputs.title.length <= 0 || blogInputs.content.length <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Title or Content be empty",
+        confirmButtonColor: "#000000",
+      });
+      return;
     }
 
-    const fileData = new FormData()
-    fileData.append("file", file)
-
-    // send the api request to  upload the file
-    try {
-      const resp = await axios.post(
-        `${BACKEND_URL}v1/user/uploadImage`,
-        fileData,
-        {
+    if (!file) {
+      // upload the data to the db as postBlogs
+      try {
+        setIsLoading((prev) => !prev);
+        await axios.post(`${BACKEND_URL}v1/blog/postBlog`, blogInputs, {
           headers: {
             Authorization: localStorage.getItem("token"),
-            'Content-Type' : 'multipart/form-data'
+            "Content-Type": "application/json",
           },
-        }
-      );
-      console.log(resp.data);
-    } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
-      console.log(`Some error occured: ${error}`);
+        });
+        setIsLoading((prev) => prev);
+        Swal.fire({
+          icon: "success",
+          title: "Suceess",
+          text: "Blog Uploaded",
+          confirmButtonColor: "#000000",
+        });
+        nav(`/home?user=${username ?? ""}&email=${email}`);
+      } catch (err) {
+        const error = err as AxiosError<{ message: string }>;
+        console.log(`Some err : ${error.response?.data?.message}`);
+      }
     }
-  }
+    // process to upload data to the cloudinary
+    else {
+      const fileData = new FormData();
+      fileData.append("file", file);
+      fileData.append("folder", "blogspot_thumbnails");
+      fileData.append("upload_preset", "blogspot_thumbnail");
+
+      // send the api request to  upload the file
+      try {
+        const resp = await axios.post(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          fileData
+        );
+        blogInputs.thumbnail = resp.data.secure_url;
+
+        // upload the data to the db as postBlogs
+        try {
+          setIsLoading((prev) => !prev);
+          await axios.post(`${BACKEND_URL}v1/blog/postBlog`, blogInputs, {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+          });
+          setIsLoading((prev) => !prev);
+          Swal.fire({
+            icon: "success",
+            title: "Suceess",
+            text: "Blog Uploaded",
+            confirmButtonColor: "#000000",
+          });
+          nav(`/home?user=${username}&email=${email}`);
+        } catch (err) {
+          const error = err as AxiosError<{ message: string }>;
+          console.log(`Some err : ${error.response?.data?.message}`);
+        }
+      } catch (err) {
+        const error = err as AxiosError<{ error: { message: string } }>;
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error.response?.data?.error.message,
+          confirmButtonColor: "#000000",
+        });
+      }
+    }
+  };
   return (
     <>
       <div className="w-full md:w-[60%] flex flex-col gap-[1rem] justify-center">
@@ -230,18 +301,20 @@ const PostBlogContent = () => {
             setBlogInputs({ ...blogInputs, content: e.target.value })
           }
         />
-        {/* // todo : add a file upload input box.. which will upload a file in the */}
-        {/* // todo : cloudinary and receive the cloudinary link */}
         <div className="flex flex-col px-[1rem] gap-[0.75rem]">
           <label>Upload a Thumbnail</label>
+          {/* // todo : later => customize the input button */}
           <input
             type="file"
-            name=""
-            id=""
             className="cursor-pointer"
             onChange={handleFileInput}
           />
-          <button className="w-[18%] bg-black py-[0.3rem] font-medium text-base md:text-lg rounded-full text-white" onClick={handleSubmit}>Upload</button>
+          <button
+            className="w-[18%] bg-black py-[0.3rem] font-medium text-base md:text-lg rounded-full text-white"
+            onClick={handleSubmit}
+          >
+            Upload
+          </button>
         </div>
       </div>
     </>

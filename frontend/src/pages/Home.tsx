@@ -42,7 +42,12 @@ const Home = () => {
         } catch (err) {
           const error = err as AxiosError<{ message: string }>;
           console.log(`Some error : ${error.response?.data?.message}`);
-          alert("You are not authenticated!!");
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "You are not Authenticated",
+            confirmButtonColor: "#000000",
+          });
           nav("/");
         }
       } else if (
