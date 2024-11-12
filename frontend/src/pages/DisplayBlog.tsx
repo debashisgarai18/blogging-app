@@ -119,7 +119,7 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
           </div>
         </div>
         {avatarHover && (
-          <div className="absolute w-[25%] top-[88%] md:left-[-2%] left-[3%]">
+          <div className="absolute w-[25%] top-[147px] md:top-[170px] md:left-[-2%] left-[3%]">
             <AvatarHoverCard name={post.author} />
           </div>
         )}
