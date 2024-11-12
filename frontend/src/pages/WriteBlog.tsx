@@ -1,7 +1,7 @@
 import { useLoadingContext } from "@/Hooks/myLoadingHook";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config/config";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 import Loading from "@/components/Loading";
+import { postInputType } from "@deba018/blogs-common";
 
 const WriteBlog = () => {
   // hooks
@@ -169,20 +170,79 @@ const PostBlogNavbar = ({
 };
 
 const PostBlogContent = () => {
+  // states
+  const [blogInputs, setBlogInputs] = useState<postInputType>({
+    title: "",
+    content: "",
+    thumbnail: "",
+  });
+  const [file, setFile] = useState<File | null>(null);
+
+  // functions
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) setFile(selectedFile);
+  };
+  
+  // function to submit the filename to the endpoint
+  const handleSubmit = async () => {
+    if(!file){
+      console.error("No file present")
+      return
+    }
+
+    const fileData = new FormData()
+    fileData.append("file", file)
+
+    // send the api request to  upload the file
+    try {
+      const resp = await axios.post(
+        `${BACKEND_URL}v1/user/uploadImage`,
+        fileData,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+            'Content-Type' : 'multipart/form-data'
+          },
+        }
+      );
+      console.log(resp.data);
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      console.log(`Some error occured: ${error}`);
+    }
+  }
   return (
     <>
-      <div className="w-full md:w-[60%] flex flex-col items-center gap-[1rem] justify-center">
+      <div className="w-full md:w-[60%] flex flex-col gap-[1rem] justify-center">
         <input
           type="text"
           placeholder="Title"
           className="w-full text-[42px] placeholder:font-medium px-[1rem] py-[1rem] outline-none border-l-2 border-white focus:border-l-2 focus:border-[#B3B3B1]"
+          onChange={(e) =>
+            setBlogInputs({ ...blogInputs, title: e.target.value })
+          }
         />
         <TextareaAutosize
           className="text-[21px] border-l-2 border-white w-full px-[1rem] py-[1rem] outline-none focus:border-l-2 focus:border-[#B3B3B1]"
           placeholder="Tell your story..."
+          onChange={(e) =>
+            setBlogInputs({ ...blogInputs, content: e.target.value })
+          }
         />
         {/* // todo : add a file upload input box.. which will upload a file in the */}
         {/* // todo : cloudinary and receive the cloudinary link */}
+        <div className="flex flex-col px-[1rem] gap-[0.75rem]">
+          <label>Upload a Thumbnail</label>
+          <input
+            type="file"
+            name=""
+            id=""
+            className="cursor-pointer"
+            onChange={handleFileInput}
+          />
+          <button className="w-[18%] bg-black py-[0.3rem] font-medium text-base md:text-lg rounded-full text-white" onClick={handleSubmit}>Upload</button>
+        </div>
       </div>
     </>
   );

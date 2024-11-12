@@ -112,6 +112,7 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
                 <BsDot />
               </div>
               <div>
+                {/* {String(dayjs(post.publishedOn))} */}
                 {post.publishedOn.split("T")[0].split("-").reverse().join("-")}
               </div>
             </div>

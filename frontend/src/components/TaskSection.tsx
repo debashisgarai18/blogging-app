@@ -16,45 +16,50 @@ export const ViewBlogs = () => {
 
 const Allblogs = () => {
   // hooks
-  const {setIsLoading} = useLoadingContext()
+  const { setIsLoading } = useLoadingContext();
+
+  interface blogType {
+    id: string;
+    title: string;
+    content: string;
+    thumbnail: string;
+    publishedOn: string;
+    author: string;
+  }
 
   // states
-  const [blogContent, setBlogContent] = useState<Array<{
-    id : string,
-    title : string,
-    content : string,
-    thumbnail : string,
-    publishedOn : string,
-    author : string
-  }>>([])
+  const [blogContent, setBlogContent] = useState<Array<blogType>>([]);
 
   // functions
   // render all the blogs from the backend
   useEffect(() => {
-    (async function(){
-      try{
-        setIsLoading(prev => !prev)
+    (async function () {
+      try {
+        setIsLoading((prev) => !prev);
         const resp = await axios.get(`${BACKEND_URL}v1/blog/bulk`, {
-          headers : {
-            Authorization : localStorage.getItem("token")
-          }
-        })
-        setIsLoading(prev => !prev)
-        setBlogContent(resp.data.message)
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+        setIsLoading((prev) => !prev);
+        setBlogContent(resp.data.message);
+      } catch (err) {
+        const error = err as AxiosError<{ message: string }>;
+        console.log(`Some Axios Error : ${error.response?.data?.message}`);
       }
-      catch(err){
-        const error = err as AxiosError<{message : string}>
-        console.log(`Some Axios Error : ${error.response?.data?.message}`)
-      }
-    })()
-  }, [setIsLoading])
-  
-  return <div className="w-full md:w-[75%] px-[1rem]">
-    <BlogCategoriesRenderer />
-    <BlogCard content={blogContent}/>
-  </div>;
+    })();
+  }, [setIsLoading]);
+
+  return (
+    <div className="w-full md:w-[75%] px-[1rem]">
+      <BlogCategoriesRenderer />
+      <BlogCard content={blogContent} />
+    </div>
+  );
 };
 
 const Suggestions = () => {
-  return <div className="w-[25%] hidden md:block bg-cyan-300 h-full">suggest</div>;
+  return (
+    <div className="w-[25%] hidden md:block bg-cyan-300 h-full">suggest</div>
+  );
 };
