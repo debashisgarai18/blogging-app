@@ -26,7 +26,7 @@ const HomeNavbar = ({
   // states
 
   return (
-    <div className="w-full flex justify-between px-[2rem] bg-white sticky top-0 md:relative py-[1rem] border-b-[1px] border-b-[#f2f1f1]">
+    <div className="w-full flex justify-between px-[2rem] bg-white z-10 md:bg-white sticky top-0 md:relative py-[1rem] border-b-[1px] border-b-[#f2f1f1]">
       <div className="flex items-center gap-[1rem]">
         <div
           className="text-3xl font-bold cursor-pointer"

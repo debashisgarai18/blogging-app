@@ -80,7 +80,7 @@ const Landing = () => {
               label="Start Reading"
               textSize="text-2xl"
               adjustText="text-lg"
-              width="w-[10rem]"
+              width="w-[13rem]"
               fontFamily={`sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`}
               borderRadius="rounded-[2.5rem]"
             />
