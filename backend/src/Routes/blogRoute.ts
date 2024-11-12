@@ -3,7 +3,7 @@ import AuthMiddleware from "../Middlewares/authMiddleware";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { PrismaClient } from "@prisma/client/edge";
 import { postInputValMW, updatePostsMW } from "../Middlewares/posstInputValMW";
-import { auth, messaging } from "firebase-admin";
+// import { auth, messaging } from "firebase-admin";
 
 export const blogRoute = new Hono<{
   Bindings: {
@@ -145,23 +145,40 @@ blogRoute.get("/bulk", async (c: Context) => {
   }
 });
 
-// ebdpoint to get the blog of provided specific blog Id
+// endpoint to get the blog of provided specific blog Id
 blogRoute.get("/:blogId", async (c: Context) => {
-  const blogId = c.req.param("id");
+  const blogId = c.req.param("blogId");
 
+  // initiate prisma
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
   try {
-    const postById = await prisma.post.findFirst({
+    const postById = await prisma.post.findUnique({
       where: {
         id: blogId,
       },
     });
+
+    // get the authorId also
+    const getAuth = await prisma.user.findUnique({
+      where: {
+        id: postById?.authorId,
+      },
+    });
+
     c.status(200);
     return c.json({
-      message: postById,
+      message: {
+        id: postById?.id,
+        title: postById?.title,
+        content: postById?.content,
+        thumbnail: postById?.thumbnail ?? "",
+        author: getAuth?.name ?? "",
+        authorId: postById?.authorId,
+        publishedOn: postById?.publishedOn,
+      },
     });
   } catch (e) {
     c.status(411);
@@ -169,5 +186,4 @@ blogRoute.get("/:blogId", async (c: Context) => {
   }
 });
 
-// todo : one endpoint to delete the route from the db if the provided auther id === current user, else show error
-
+// todo : one endpoint to delete the post from the db if the provided auther id === current user, else show error
