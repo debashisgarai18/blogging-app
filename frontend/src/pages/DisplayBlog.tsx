@@ -4,7 +4,7 @@ import { useLoadingContext } from "@/Hooks/myLoadingHook";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config/config";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BsDot } from "react-icons/bs";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -26,13 +26,21 @@ const DisplayBlog = () => {
       {isLoading && <Loading />}
       <div className="flex flex-col items-center">
         <HomeNavbar userName={userName} email={email} />
-        <ShowBlogDetails blogid={blogId} />
+        <ShowBlogDetails blogid={blogId} userName={userName} email={email} />
       </div>
     </>
   );
 };
 
-const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
+const ShowBlogDetails = ({
+  blogid,
+  userName,
+  email,
+}: {
+  blogid: string;
+  userName: string;
+  email: string;
+}) => {
   interface postType {
     id: string;
     title: string;
@@ -62,6 +70,7 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
 
   // hooks
   const { setIsLoading } = useLoadingContext();
+  const nav = useNavigate();
 
   // functions
   // function to fetch the blog data given the blogId
@@ -109,6 +118,23 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
           confirmButtonColor: "#000000",
         });
       }
+
+      // recall the function to make the smae Api call again
+      (async function () {
+        try {
+          setIsLoading((prev) => !prev);
+          const response = await axios.get(`${BACKEND_URL}v1/blog/${blogid}`, {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          });
+          setIsLoading((prev) => !prev);
+          setPost(response.data.message);
+        } catch (err) {
+          const error = err as AxiosError<{ message: string }>;
+          console.log(`Some axios error : ${error}`);
+        }
+      })();
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       Swal.fire({
@@ -117,6 +143,41 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
         text: error.response?.data?.message,
         confirmButtonColor: "#000000",
       });
+      nav(`/displayBlog?user=${userName}&email=${email}}`);
+    }
+  };
+
+  // function to delete a particular blog
+  const handleDeleteButton = async () => {
+    try {
+      setIsLoading((prev) => !prev);
+      const resp = await axios.delete(
+        `${BACKEND_URL}v1/blog/deleteBlog/${blogid}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setIsLoading((prev) => !prev);
+      if (resp) {
+        Swal.fire({
+          icon: "success",
+          title: "Sucess",
+          text: "The Blog is deleted successfully",
+          confirmButtonColor: "#000000",
+        });
+      }
+      nav(`/home?user=${userName}&email=${email}`);
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message,
+        confirmButtonColor: "#000000",
+      });
+      nav(`/displayBlog?user=${userName}&email=${email}}`);
     }
   };
 
@@ -204,7 +265,10 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
                 <div className="hidden md:block">Save</div>
               </button>
             )}
-            <button className="py-[0.5rem] px-[1rem] text-white bg-black rounded-full flex items-center justify-center gap-[0.5rem]">
+            <button
+              className="py-[0.5rem] px-[1rem] text-white bg-black rounded-full flex items-center justify-center gap-[0.5rem]"
+              onClick={handleDeleteButton}
+            >
               <AiOutlineDelete />
               <div className="hidden md:block">Delete</div>
             </button>
