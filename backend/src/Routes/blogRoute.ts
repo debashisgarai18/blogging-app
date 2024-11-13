@@ -144,7 +144,7 @@ blogRoute.put("/updateBlog/:blogId", updatePostsMW, async (c: Context) => {
 });
 
 // enpoint to should all all the posts available
-// TODO : have the pagination for the blogs, display 10 at a time in the landing page
+// TODO : have the pagination for the blogs, display 10 at a time in the landing page --> tbd next
 blogRoute.get("/bulk", async (c: Context) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,

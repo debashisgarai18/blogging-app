@@ -66,7 +66,6 @@ const HomeNavbar = ({
         <div>
           <IoIosNotificationsOutline className="text-2xl text-[#7D7D7D] hover:text-black cursor-pointer" />
         </div>
-        {/* // todo : modify this dropdown menu according to the website */}
         <DropdownMenu>
               <DropdownMenuTrigger className="text-lg md:text-2xl font-semibold text-white m-[1rem]">
                 <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer uppercase">

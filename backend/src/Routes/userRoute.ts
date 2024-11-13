@@ -175,7 +175,7 @@ userRoute.get("/userDetails/:authorId", async (c: Context) => {
   }
 });
 
-// todo : endpoint which allows the user to edit their profiles
+// todo : endpoint which allows the user to edit their profiles -> tbd done after the pagination/infinite scrolling of the blogs
 
 // google auth (Later)
 // todo : one endpoint for the google auth signup -> to store the userData in the DB
