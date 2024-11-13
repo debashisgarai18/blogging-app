@@ -111,7 +111,7 @@ blogRoute.put("/updateBlog/:blogId", updatePostsMW, async (c: Context) => {
     if (idExists) {
       // check whether the user is the author of the blog or not
       if (idExists.authorId !== c.get("userId")) {
-        c.status(404);
+        c.status(403);
         return c.json({
           message: "You dont have access to edit this post",
         });
