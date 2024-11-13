@@ -1,4 +1,4 @@
-import { CiSearch } from "react-icons/ci";
+// import { CiSearch } from "react-icons/ci";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import {
@@ -34,8 +34,7 @@ const HomeNavbar = ({
         >
           Blogspot
         </div>
-        <div className="items-center gap-[0.5rem] bg-[#F9F9F9] px-[0.75rem] py-[0.5rem] rounded-full hidden md:flex">
-          <CiSearch className="text-2xl" />
+        {/* <div className="items-center gap-[0.5rem] bg-[#F9F9F9] px-[0.75rem] py-[0.5rem] rounded-full hidden md:flex">
           <div>
             <input
               type="text"
@@ -43,7 +42,8 @@ const HomeNavbar = ({
               placeholder="Search"
             />
           </div>
-        </div>
+          <CiSearch className="text-2xl cursor-pointer" />
+        </div> */}
       </div>
       <div
         className="flex items-center gap-[1rem]"
@@ -62,13 +62,13 @@ const HomeNavbar = ({
           <HiOutlinePencilAlt className="text-2xl" />
           <div>Write</div>
         </div>
-        <CiSearch className="text-2xl block md:hidden" />
+        {/* <CiSearch className="text-2xl block md:hidden" /> */}
         <div>
           <IoIosNotificationsOutline className="text-2xl text-[#7D7D7D] hover:text-black cursor-pointer" />
         </div>
         {/* // todo : modify this dropdown menu according to the website */}
         <DropdownMenu>
-              <DropdownMenuTrigger className="text-lg md:text-2xl font-semibold text-white">
+              <DropdownMenuTrigger className="text-lg md:text-2xl font-semibold text-white m-[1rem]">
                 <div className="w-[2.3rem] h-[2.3rem] rounded-[50%] flex items-center justify-center bg-black cursor-pointer uppercase">
                   {userName && userName[0]}
                 </div>

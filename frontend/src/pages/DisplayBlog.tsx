@@ -8,6 +8,10 @@ import { useSearchParams } from "react-router-dom";
 import { BsDot } from "react-icons/bs";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { AiOutlineDelete } from "react-icons/ai";
+import { CiSaveUp2 } from "react-icons/ci";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+import { updatePostType } from "@deba018/blogs-common";
+import Swal from "sweetalert2";
 
 const DisplayBlog = () => {
   // hooks
@@ -38,6 +42,7 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
     author: string;
     authorId: string;
   }
+
   // states
   const [post, setPost] = useState<postType>({
     id: "",
@@ -49,6 +54,11 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
     authorId: "",
   });
   const [avatarHover, setAvatarHover] = useState<boolean>(false);
+  const [enableEdit, setEnableEdit] = useState<boolean>(false);
+  const [updatedInput, setUpdatedInput] = useState<updatePostType>({
+    title: "",
+    content: "",
+  });
 
   // hooks
   const { setIsLoading } = useLoadingContext();
@@ -73,18 +83,69 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
     })();
   }, [blogid, setIsLoading]);
 
+  // function to upload the updated inputs to the DB
+  const handleSaveButton = async () => {
+    setEnableEdit((prev) => !prev);
+
+    // send the api call to the edit endpoint
+    try {
+      setIsLoading((prev) => !prev);
+      const resp = await axios.put(
+        `${BACKEND_URL}v1/blog/updateBlog/${blogid}`,
+        updatedInput,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setIsLoading((prev) => !prev);
+      if (resp) {
+        Swal.fire({
+          icon: "success",
+          title: "success",
+          text: "Blog updated successfully",
+          confirmButtonColor: "#000000",
+        });
+      }
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message,
+        confirmButtonColor: "#000000",
+      });
+    }
+  };
+
   return (
     <>
       <div className="w-full relative md:w-[50%] px-[1rem] md:px-0 py-[2rem] leading-tight flex flex-col gap-[1rem]">
         {/* // title */}
-        <div
-          className="w-full text-[42px] font-bold capitalize"
-          style={{
-            fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
-          }}
-        >
-          {post.title}
-        </div>
+        {enableEdit ? (
+          <input
+            type="text"
+            defaultValue={post.title}
+            className="w-full text-[42px] placeholder:font-medium px-[1rem] py-[1rem] outline-none border-l-2 border-white focus:border-l-2 focus:border-[#B3B3B1]"
+            style={{
+              fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
+            }}
+            onChange={(e) =>
+              setUpdatedInput({ ...updatedInput, title: e.target.value })
+            }
+          />
+        ) : (
+          <div
+            className="w-full text-[42px] font-bold capitalize"
+            style={{
+              fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
+            }}
+          >
+            {post.title}
+          </div>
+        )}
         {/* // avatar and username */}
         <div className="w-full flex items-center gap-[0.75rem]">
           {/* // avatar */}
@@ -126,10 +187,23 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
         {/* //edit and delete button part */}
         <div className="w-full border-y-[1px] border-y-[#F2F2F2] py-[1rem] flex justify-end">
           <div className="flex gap-[1rem]">
-            <button className="py-[0.3rem] px-[1rem] text-white bg-black rounded-full flex items-center justify-center gap-[0.5rem]">
-              <AiTwotoneEdit />
-              <div className="hidden md:block">Edit</div>
-            </button>
+            {!enableEdit ? (
+              <button
+                className="py-[0.3rem] px-[1rem] text-white bg-black rounded-full flex items-center justify-center gap-[0.5rem]"
+                onClick={() => setEnableEdit((prev) => !prev)}
+              >
+                <AiTwotoneEdit />
+                <div className="hidden md:block">Edit</div>
+              </button>
+            ) : (
+              <button
+                className="py-[0.3rem] px-[1rem] text-white bg-black rounded-full flex items-center justify-center gap-[0.5rem]"
+                onClick={handleSaveButton}
+              >
+                <CiSaveUp2 />
+                <div className="hidden md:block">Save</div>
+              </button>
+            )}
             <button className="py-[0.5rem] px-[1rem] text-white bg-black rounded-full flex items-center justify-center gap-[0.5rem]">
               <AiOutlineDelete />
               <div className="hidden md:block">Delete</div>
@@ -137,7 +211,6 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
           </div>
         </div>
         {/* thumbnail part */}
-        {/* // todo : replace this with the original thumbnail link */}
         <div className="w-full h-[450px]">
           {post.thumbnail.match(
             /^https:\/\/res\.cloudinary\.com\/dsqym1wwy\/image\/upload\/(.+)?$/
@@ -156,14 +229,27 @@ const ShowBlogDetails = ({ blogid }: { blogid: string }) => {
           )}
         </div>
         {/* content part */}
-        <div
-          className="w-full text-xl"
-          style={{
-            fontFamily: `source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif`,
-          }}
-        >
-          {post.content}
-        </div>
+        {enableEdit ? (
+          <TextareaAutosize
+            className="text-[21px] border-l-2 border-white w-full px-[1rem] py-[1rem] outline-none focus:border-l-2 focus:border-[#B3B3B1]"
+            defaultValue={post.content}
+            style={{
+              fontFamily: `source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif`,
+            }}
+            onChange={(e) =>
+              setUpdatedInput({ ...updatedInput, content: e.target.value })
+            }
+          />
+        ) : (
+          <div
+            className="w-full text-xl"
+            style={{
+              fontFamily: `source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif`,
+            }}
+          >
+            {post.content}
+          </div>
+        )}
       </div>
     </>
   );

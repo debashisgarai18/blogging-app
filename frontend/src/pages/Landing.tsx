@@ -279,9 +279,9 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
             </button>
           </div>
           {/* // button for google signin / signup */}
-          <div className="w-[70%]">
+          <div className="md:w-[70%] w-[90%]">
             <button
-              className="bg-white border-2 border-black w-full text-black px-[1rem] py-[0.75rem] rounded-full text-xl capitalize flex items-center justify-center gap-[1rem]"
+              className="bg-white border-2 border-black w-full text-black px-[1rem] py-[0.75rem] rounded-full text-base md:text-xl capitalize flex items-center justify-center gap-[1rem]"
               style={{
                 fontFamily: `sohne, "Helvetica Neue", Helvetica, Arial, sans-serif`,
               }}
