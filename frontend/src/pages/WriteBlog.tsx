@@ -1,7 +1,7 @@
 import { useLoadingContext } from "@/Hooks/myLoadingHook";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL, CLOUDINARY_CLOUD_NAME } from "../../config/config";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import {
@@ -26,6 +26,11 @@ const WriteBlog = () => {
   const user = searchParams.get("user") ?? "";
   const email = searchParams.get("email") ?? "";
   const { isLoading, setIsLoading } = useLoadingContext();
+  const [blogInput, setBlogInput] = useState<postInputType>({
+    title: "",
+    content: "",
+    thumbnail: "",
+  });
 
   // functions
   // this should load if there exists a token in the localStorage
@@ -62,12 +67,60 @@ const WriteBlog = () => {
     }
   }, [nav, setIsLoading]);
 
+  // function to handle the publishing of the data to the DB
+  const handlePublish = async () => {
+    // just a check that the title and the content cannot be empty
+    if (blogInput.title.length <= 0 || blogInput.content.length <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Title or Content be empty",
+        confirmButtonColor: "#000000",
+      });
+      return;
+    }
+
+    console.log(blogInput);
+    
+    // upload the data to the db -> if all the fields are present
+    try {
+      setIsLoading((prev) => !prev);
+      await axios.post(`${BACKEND_URL}v1/blog/postBlog`, blogInput, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+          "Content-Type": "application/json",
+        },
+      });
+      setIsLoading((prev) => !prev);
+      Swal.fire({
+        icon: "success",
+        title: "Suceess",
+        text: "Blog Uploaded",
+        confirmButtonColor: "#000000",
+      });
+      nav(`/home?user=${user}&email=${email}`);
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      console.log(`Some err : ${error.response?.data?.message}`);
+    }
+  };
+
   return (
     <>
       {isLoading && <Loading />}
       <div className="w-full h-screen flex flex-col items-center gap-[2.5rem]">
-        <PostBlogNavbar userName={user} email={email} />
-        <PostBlogContent username={user} email={email} />
+        <PostBlogNavbar userName={user} email={email} publish={handlePublish} />
+        <PostBlogContent
+          setTitle={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setBlogInput({ ...blogInput, title: e.target.value })
+          }
+          setContent={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setBlogInput({ ...blogInput, content: e.target.value })
+          }
+          setThumbnail={(url: string) =>
+            setBlogInput({ ...blogInput, thumbnail: url })
+          }
+        />
       </div>
     </>
   );
@@ -76,13 +129,14 @@ const WriteBlog = () => {
 const PostBlogNavbar = ({
   userName,
   email,
+  publish,
 }: {
   userName: string;
   email: string;
+  publish: () => void;
 }) => {
+  // hooks
   const nav = useNavigate();
-
-  // states
   const { setIsLoading } = useLoadingContext();
 
   return (
@@ -110,8 +164,12 @@ const PostBlogNavbar = ({
           >
             {/* // todo : display the error message if someone tries to publish with empty fields
             // todo : change the color of the button till the fields are not filled */}
+            {/* // todo : handle the publish request from here.. not from the upload button */}
             <div>
-              <button className="text-base bg-[#1e8f1a] hover:bg-[#0F730C] text-white px-[0.75rem] py-[0.3rem] rounded-full">
+              <button
+                className="text-base bg-[#1e8f1a] hover:bg-[#0F730C] text-white px-[0.75rem] py-[0.3rem] rounded-full"
+                onClick={publish}
+              >
                 Publish
               </button>
             </div>
@@ -176,23 +234,17 @@ const PostBlogNavbar = ({
 };
 
 const PostBlogContent = ({
-  username,
-  email,
+  setTitle,
+  setContent,
+  setThumbnail,
 }: {
-  username: string;
-  email: string;
+  setTitle: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setContent: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  setThumbnail: (url: string) => void;
 }) => {
+  // todo : move these states and the functions to the parent component
   // states
-  const [blogInputs, setBlogInputs] = useState<postInputType>({
-    title: "",
-    content: "",
-    thumbnail: "",
-  });
   const [file, setFile] = useState<File | null>(null);
-
-  // hooks
-  const { setIsLoading } = useLoadingContext();
-  const nav = useNavigate();
 
   // functions
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,43 +253,10 @@ const PostBlogContent = ({
   };
 
   // function to submit the filename to the endpoint
+  // todo :this function will only uplaod the image to the cloudinary and set the image link to the global state
   const handleSubmit = async () => {
-    // just a check that the title and the content cannot be empty
-    if (blogInputs.title.length <= 0 || blogInputs.content.length <= 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Title or Content be empty",
-        confirmButtonColor: "#000000",
-      });
-      return;
-    }
-
-    if (!file) {
-      // upload the data to the db as postBlogs
-      try {
-        setIsLoading((prev) => !prev);
-        await axios.post(`${BACKEND_URL}v1/blog/postBlog`, blogInputs, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-            "Content-Type": "application/json",
-          },
-        });
-        setIsLoading((prev) => prev);
-        Swal.fire({
-          icon: "success",
-          title: "Suceess",
-          text: "Blog Uploaded",
-          confirmButtonColor: "#000000",
-        });
-        nav(`/home?user=${username ?? ""}&email=${email}`);
-      } catch (err) {
-        const error = err as AxiosError<{ message: string }>;
-        console.log(`Some err : ${error.response?.data?.message}`);
-      }
-    }
     // process to upload data to the cloudinary
-    else {
+    if (file) {
       const fileData = new FormData();
       fileData.append("file", file);
       fileData.append("folder", "blogspot_thumbnails");
@@ -249,29 +268,9 @@ const PostBlogContent = ({
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
           fileData
         );
-        blogInputs.thumbnail = resp.data.secure_url;
+        setThumbnail(resp.data.secure_url);
 
         // upload the data to the db as postBlogs
-        try {
-          setIsLoading((prev) => !prev);
-          await axios.post(`${BACKEND_URL}v1/blog/postBlog`, blogInputs, {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-              "Content-Type": "application/json",
-            },
-          });
-          setIsLoading((prev) => !prev);
-          Swal.fire({
-            icon: "success",
-            title: "Suceess",
-            text: "Blog Uploaded",
-            confirmButtonColor: "#000000",
-          });
-          nav(`/home?user=${username}&email=${email}`);
-        } catch (err) {
-          const error = err as AxiosError<{ message: string }>;
-          console.log(`Some err : ${error.response?.data?.message}`);
-        }
       } catch (err) {
         const error = err as AxiosError<{ error: { message: string } }>;
         Swal.fire({
@@ -290,16 +289,12 @@ const PostBlogContent = ({
           type="text"
           placeholder="Title"
           className="w-full text-[42px] placeholder:font-medium px-[1rem] py-[1rem] outline-none border-l-2 border-white focus:border-l-2 focus:border-[#B3B3B1]"
-          onChange={(e) =>
-            setBlogInputs({ ...blogInputs, title: e.target.value })
-          }
+          onChange={(e) => setTitle(e)}
         />
         <TextareaAutosize
           className="text-[21px] border-l-2 border-white w-full px-[1rem] py-[1rem] outline-none focus:border-l-2 focus:border-[#B3B3B1]"
           placeholder="Tell your story..."
-          onChange={(e) =>
-            setBlogInputs({ ...blogInputs, content: e.target.value })
-          }
+          onChange={(e) => setContent(e)}
         />
         <div className="flex flex-col px-[1rem] gap-[0.75rem]">
           <label>Upload a Thumbnail</label>
