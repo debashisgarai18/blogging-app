@@ -9,7 +9,7 @@ export const ViewBlogs = () => {
   return (
     <div className="w-full py-[2rem] flex gap-[1rem]">
       <Allblogs />
-      <Suggestions />
+      {/* <Suggestions /> */}
     </div>
   );
 };

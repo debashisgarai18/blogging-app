@@ -1,6 +1,7 @@
 import { IoAddSharp } from "react-icons/io5";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-// todo : to be taken from the original postgres DB
+// todo : to be taken from the original postgres DB ->  modify the DB according to the categories
 const demoCategories = [
   "For you",
   "Following",
@@ -10,10 +11,24 @@ const demoCategories = [
 ];
 
 export const BlogCategoriesRenderer = () => {
+
+  
+  // hooks
+  const [searchParams] = useSearchParams();
+  const nav = useNavigate();
+  const user = searchParams.get("user") ?? "";
+  const email = searchParams.get("email") ?? "";
+
+
   return (
     <>
       <div className="w-full hidden md:flex justify-between items-center overflow-clip md:sticky top-0 bg-white">
-        <button className="bg-white hover:bg-[#e7e6e6] flex items-center justify-center rounded-[50%] h-[1.5rem] w-[1.5rem]">
+        <button
+          className="bg-white hover:bg-[#e7e6e6] flex items-center justify-center rounded-[50%] h-[1.5rem] w-[1.5rem]"
+          onClick={() => {
+            nav(`/postBlog?user=${user}&email=${email}`);
+          }}
+        >
           <IoAddSharp />
         </button>
         {demoCategories.map((_, idx) => {
