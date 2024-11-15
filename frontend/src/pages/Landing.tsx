@@ -279,7 +279,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
             </button>
           </div>
           {/* // button for google signin / signup */}
-          <div className="md:w-[70%] w-[90%]">
+          {/* <div className="md:w-[70%] w-[90%]">
             <button
               className="bg-white border-2 border-black w-full text-black px-[1rem] py-[0.75rem] rounded-full text-base md:text-xl capitalize flex items-center justify-center gap-[1rem]"
               style={{
@@ -295,7 +295,7 @@ const AuthData = ({ label, setAuthPref, authPref }: AuthProps) => {
                   : "Sign Up with google"}
               </div>
             </button>
-          </div>
+          </div> */}
         </form>
         <div
           className="w-full text-center text-[16px]"
