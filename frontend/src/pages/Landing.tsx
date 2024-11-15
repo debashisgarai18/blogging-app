@@ -14,7 +14,7 @@ import { BACKEND_URL } from "../../config/config";
 import { useNavigate } from "react-router-dom";
 import { useLoadingContext } from "../Hooks/myLoadingHook";
 import Loading from "../components/Loading";
-import { FcGoogle } from "react-icons/fc";
+// import { FcGoogle } from "react-icons/fc";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 

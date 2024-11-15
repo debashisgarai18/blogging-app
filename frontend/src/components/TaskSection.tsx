@@ -59,8 +59,8 @@ const Allblogs = () => {
 };
 
 // todo : Design this part -> tbd next
-const Suggestions = () => {
-  return (
-    <div className="w-[25%] hidden md:block h-full">Suggestions</div>
-  );
-};
+// const Suggestions = () => {
+//   return (
+//     <div className="w-[25%] hidden md:block h-full">Suggestions</div>
+//   );
+// };
